@@ -1,0 +1,5 @@
+1.Learning about pakets
+
+1. https://www.lifewire.com/what-is-a-data-packet-3426310
+2. https://computer.howstuffworks.com/question5251.htm
+3. https://en.wikipedia.org/wiki/Network_packet
