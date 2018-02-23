@@ -1,7 +1,9 @@
-1.Learning about pakets
+1.Learning about pakets and other important things
 
 1. https://www.lifewire.com/what-is-a-data-packet-3426310
 2. https://computer.howstuffworks.com/question5251.htm
 3. https://en.wikipedia.org/wiki/Network_packet
-4. commit changes.
-5. leve; 5
+4. https://www.tutorialspoint.com/cprogramming/c_typedef.htm
+5.http://easyonlineconverter.com/codes/cpp_codes/c-program-to-convert-hex-to-ascii-string.html
+6.https://www.experts-exchange.com/questions/26661242/Convert-HEX-string-to-ASCII-string-C-C.html
+7.https://fresh2refresh.com/c-programming/c-typedef/ 
