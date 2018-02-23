@@ -27,14 +27,26 @@ int main(){
 
 		printf("%.02x " , ch&(0xff));
 
+		int read ;
+
 		if(i%8==0) cout << "   " ;
 
 		if(i%16==0){
             for(int j=0;j<16;j++){
-                if(isprint(str[j]))  //sees if character is printable
+
+                if(isprint(str[j])) { //sees if character is printable
                     cout << str[j] ;
-                else
+                }
+                else {
                     cout << ".";
+                }
+            }
+
+             cout << "   " ;
+            for(int j=0;j<16;j++){
+				read = str[j] ;
+				cout << read  << " ";
+
             }
 
             printf(" \n");
