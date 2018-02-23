@@ -5,6 +5,16 @@
 
 using namespace std;
 
+typedef struct pcapGlobalHeader {
+
+        unsigned long int magicNumber;   		// magic number , 4 byte
+        unsigned short int majorVersionNumber;  // major version number ,2 byte
+        unsigned short int minorVersionNumber;  // minor version number , 2 byte
+        unsigned long int  timeOffsetGMT;       // GMT to local correction , 4 byte
+        unsigned long int sigfigs;        		// accuracy of timestamps , 4 byte
+        unsigned long int maxSnapshotLenght;    // max length of captured packets, in octets , 4 byte
+        unsigned long int linkLayerProtocol;    // data link type , 4 byte
+};
 
 int main(){
 
