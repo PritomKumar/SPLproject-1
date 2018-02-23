@@ -3,8 +3,12 @@
 1. https://www.lifewire.com/what-is-a-data-packet-3426310
 2. https://computer.howstuffworks.com/question5251.htm
 3. https://en.wikipedia.org/wiki/Network_packet
+***
 4. https://www.tutorialspoint.com/cprogramming/c_typedef.htm
 5.http://easyonlineconverter.com/codes/cpp_codes/c-program-to-convert-hex-to-ascii-string.html
 6.https://www.experts-exchange.com/questions/26661242/Convert-HEX-string-to-ASCII-string-C-C.html
 7.https://fresh2refresh.com/c-programming/c-typedef/ 
+****
 8.http://www.kroosec.com/2012/10/a-look-at-pcap-file-format.html
+9.https://delog.wordpress.com/2010/12/16/information-in-a-pcap-file-with-a-single-tcpip-packet/
+10.http://www.lynxbee.com/understanding-pcap-file-format-part-i-global-header/
