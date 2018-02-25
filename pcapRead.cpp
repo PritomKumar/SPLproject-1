@@ -7,13 +7,13 @@ using namespace std;
 
 typedef struct pcapGlobalHeader {
 
-        unsigned long int magicNumber;   		// magic number , 4 byte
-        unsigned short int majorVersionNumber;  // major version number ,2 byte
-        unsigned short int minorVersionNumber;  // minor version number , 2 byte
-        unsigned long int  timeOffsetGMT;       // GMT to local correction , 4 byte
-        unsigned long int sigfigs;        		// accuracy of timestamps , 4 byte
-        unsigned long int maxSnapshotLenght;    // max length of captured packets, in octets , 4 byte
-        unsigned long int linkLayerProtocol;    // data link type , 4 byte
+        char magicNumber[4];   		// magic number , 4 byte
+        char majorVersionNumber[2];  // major version number ,2 byte
+        char minorVersionNumber[2];  // minor version number , 2 byte
+        char timeOffsetGMT[4];       // GMT to local correction , 4 byte
+        char sigfigs[4];        		// accuracy of timestamps , 4 byte
+        char maxSnapshotLenght[4];    // max length of captured packets, in octets , 4 byte
+        char linkLayerProtocol[4];    // data link type , 4 byte
 };
 
 int main(){
@@ -26,8 +26,16 @@ int main(){
 
 	fp = fopen("samplePcap.pcap","rb");
 
-	int i=0;
+	pcapGlobalHeader globhdr;
 
+	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
+
+	for(int i =0 ; i<4 ; i++){
+		cout << globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
+	}
+
+	int i=0;
+/*
 	while(!feof(fp)){
 
 		fread(&ch,1,1,fp);
@@ -66,7 +74,7 @@ int main(){
 
 	}
 
-
+*/
 
 
 }
