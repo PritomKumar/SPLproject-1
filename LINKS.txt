@@ -12,3 +12,6 @@
 8.http://www.kroosec.com/2012/10/a-look-at-pcap-file-format.html
 9.https://delog.wordpress.com/2010/12/16/information-in-a-pcap-file-with-a-single-tcpip-packet/
 10.http://www.lynxbee.com/understanding-pcap-file-format-part-i-global-header/
+FileRead
+1.https://stackoverflow.com/questions/33568577/fread-a-struct-in-c 	
+2.https://www.geeksforgeeks.org/readwrite-structure-file-c/
