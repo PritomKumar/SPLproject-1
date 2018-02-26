@@ -7,20 +7,20 @@ using namespace std;
 
 typedef struct pcapGlobalHeader { 	//total 24 bytes
 
-        char magicNumber[4];   		// magic number , 4 byte
-        char majorVersionNumber[2];  // major version number ,2 byte
-        char minorVersionNumber[2];  // minor version number , 2 byte
-        char timeOffsetGMT[4];       // GMT to local correction , 4 byte
-        char sigfigs[4];        	// accuracy of timestamps , 4 byte
-        char maxSnapshotLenght[4];    // max length of captured packets, in octets , 4 byte
-        char linkLayerProtocol[4];    // data link type , 4 byte
+        unsigned char magicNumber[4];   		// magic number , 4 byte
+        unsigned char majorVersionNumber[2];   // major version number ,2 byte
+        unsigned char minorVersionNumber[2];   // minor version number , 2 byte
+        unsigned char timeOffsetGMT[4];        // GMT to local correction , 4 byte
+        unsigned char sigfigs[4];        	   // accuracy of timestamps , 4 byte
+        unsigned char maxSnapshotLenght[4];    // max length of captured packets, in octets , 4 byte
+        unsigned char linkLayerProtocol[4];    // data link type , 4 byte
 };
 
 typedef struct packetHeader{
-		char timeStamps[4];				// timestamps in seconds from 1970
-		char packetCaptureTime[4];		// capture time in microseconds
-		char packetSizeFromData[4];		// saved data size in packets
-		char packetLengthFromWire[4];	// packet length captured from wire
+		unsigned char timeStamps[4];				// timestamps in seconds from 1970
+		unsigned char packetCaptureTime[4];		// capture time in microseconds
+		unsigned char packetSizeFromData[4];		// saved data size in packets
+		unsigned char packetLengthFromWire[4];	// packet length captured from wire
 
 };
 
@@ -41,12 +41,16 @@ int main(){
 	fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
 
 	for(int i =0 ; i<4 ; i++){
-		//cout << globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
-		printf("%.02x " , globhdr.magicNumber[i]&(0xff));
+
+		//cout << (int)globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
+		//cout << (char)globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
+		//printf("%.02x " , globhdr.magicNumber[i]&(0xff));
 	}
 
 	for(int i =0 ; i<4 ; i++){
-		//cout << globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
+		unsigned int l = (int)pachdr.timeStamps[i];
+		cout << l << " " ; //hahahahhahaha I am a genius;
+		cout << (char)pachdr.timeStamps[i] << " " ; //hahahahhahaha I am a genius;
 		printf("%.02x " , pachdr.timeStamps[i]&(0xff));
 	}
 // just need to convert the numbers in appropriate hex value and convert them to integer
