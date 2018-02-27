@@ -141,7 +141,8 @@ int main(){
 	unsigned char ch;
 	unsigned char str[16];
 
-	readFullPcapDataAsCharacterAndInteger();
+	//readFullPcapDataAsCharacterAndInteger();
+
 	fp = fopen("samplePcap.pcap","rb");
 
 	pcapGlobalHeader globhdr;
@@ -173,6 +174,9 @@ int main(){
 		packetHeader  pachdr;
 		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
 
+		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
+		if((int)pachdr.timeStamps[0] == 0) break;
+
 		i++;
 		int t = dataSize(pachdr);
 
@@ -190,6 +194,6 @@ int main(){
 		}
 
 	}
-	cout << "total packets = " << i <<endl;
+	cout << "\nTotal packets = " << i <<endl;
 
 }
