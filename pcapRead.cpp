@@ -97,19 +97,51 @@ int dataSize(packetHeader pachdr){
 		x = x | cc;
 
 	}
-
 	return x;
+}
 
+void readFullPcapDataAsCharacterAndInteger(){
+
+	FILE *input;
+	unsigned char ch;
+	unsigned char str[16];
+	int i=0;
+
+	input = fopen("samplePcap.pcap","rb");
+
+	while(!feof(input)){
+
+		fread(&ch,1,1,input);
+		str[i] = ch;
+		i++;
+
+		printf("%.02x " , ch&(0xff));
+
+		int read ;
+		if(i%8==0) cout << "   " ;
+		if(i%16==0){
+            for(int j=0;j<16;j++){
+                if(isprint(str[j]))  cout << str[j] ; //sees if character is printable
+                else cout << ".";
+            }
+			cout << "   " ;
+            for(int j=0;j<16;j++){
+				read = str[j] ;
+				cout << read  << " ";
+            }
+            printf(" \n");
+            i=0;
+        }
+	}
 }
 
 int main(){
-
-	string s;
 
 	FILE *fp;
 	unsigned char ch;
 	unsigned char str[16];
 
+	readFullPcapDataAsCharacterAndInteger();
 	fp = fopen("samplePcap.pcap","rb");
 
 	pcapGlobalHeader globhdr;
@@ -135,7 +167,6 @@ int main(){
 	}
 
 	int i=0;
-	int temp=0;
 
 	while(!feof(fp)){
 
@@ -158,40 +189,7 @@ int main(){
 			}
 		}
 
-		/*
-		str[i] = ch;
-		i++;
-
-		printf("%.02x " , ch&(0xff));
-
-		int read ;
-
-		if(i%8==0) cout << "   " ;
-
-		if(i%16==0){
-            for(int j=0;j<16;j++){
-
-                if(isprint(str[j])) { //sees if character is printable
-                    cout << str[j] ;
-                }
-                else {
-                    cout << ".";
-                }
-            }
-
-             cout << "   " ;
-            for(int j=0;j<16;j++){
-				read = str[j] ;
-				cout << read  << " ";
-
-            }
-
-            printf(" \n");
-            i=0;
-        }
-	*/
-
-}
+	}
 	cout << "total packets = " << i <<endl;
 
 }
