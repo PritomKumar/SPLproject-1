@@ -7,22 +7,100 @@ using namespace std;
 
 typedef struct pcapGlobalHeader { 	//total 24 bytes
 
-        unsigned char magicNumber[4];   		// magic number , 4 byte
-        unsigned char majorVersionNumber[2];   // major version number ,2 byte
-        unsigned char minorVersionNumber[2];   // minor version number , 2 byte
-        unsigned char timeOffsetGMT[4];        // GMT to local correction , 4 byte
-        unsigned char sigfigs[4];        	   // accuracy of timestamps , 4 byte
-        unsigned char maxSnapshotLenght[4];    // max length of captured packets, in octets , 4 byte
-        unsigned char linkLayerProtocol[4];    // data link type , 4 byte
+        unsigned char magicNumber[4];   		 // magic number , 4 byte
+        unsigned char majorVersionNumber[2];   	 // major version number ,2 byte
+        unsigned char minorVersionNumber[2];  	 // minor version number , 2 byte
+        unsigned char timeOffsetGMT[4];       	 // GMT to local correction , 4 byte
+        unsigned char sigfigs[4];        	 	 // accuracy of timestamps , 4 byte
+        unsigned char maxSnapshotLenght[4];      // max length of captured packets, in octets , 4 byte
+        unsigned char linkLayerProtocol[4];      // data link type , 4 byte
 };
 
-typedef struct packetHeader{
+typedef struct packetHeader{	//total 16 bytes
 		unsigned char timeStamps[4];				// timestamps in seconds from 1970
-		unsigned char packetCaptureTime[4];		// capture time in microseconds
+		unsigned char packetCaptureTime[4];			// capture time in microseconds
 		unsigned char packetSizeFromData[4];		// saved data size in packets
-		unsigned char packetLengthFromWire[4];	// packet length captured from wire
+		unsigned char packetLengthFromWire[4];		// packet length captured from wire
 
 };
+
+typedef struct  ethernetHeader{  // total 14 bytes
+                                        //**[Link Layer]**//
+    unsigned char ethDest[6];           //destination ethernet address
+    unsigned char ethSrc[6];            //source ethernet address
+    unsigned char ethType[2];           //ethernet type
+
+};
+
+
+typedef struct IPHeader{
+                                        //**[Network Layer]**//
+    unsigned char headerL;              //Header lenght
+    unsigned char Explicit;             //type of service
+    unsigned char ipLength[2];          //total length
+    unsigned char identification[2];    //Identofication
+    unsigned char fragment[2];          //fragment
+    unsigned char TTL;                  //Time to live
+    unsigned char protocol;             //transport layer protocol
+    unsigned char headerChecksum[2];    //header checksum
+    unsigned char sourceIpAddr[4];      //source ip address
+    unsigned char destIpAddr[4];        //destination ip address
+
+};
+
+typedef struct TCPHeader{
+
+    unsigned char sourcePort[2];
+    unsigned char destPort[2];
+    unsigned char sequenceNumber[4];
+    unsigned char acknowledgementNumber[4];
+    unsigned char headerLength;
+    unsigned char flags;
+    unsigned char windowSizeValue[2];
+    unsigned char checksum[2];
+    unsigned char urgentPoiter[2];
+
+};
+
+typedef struct UDPHeader{
+
+    unsigned char sourcePort[2];
+    unsigned char destPort[2];
+    unsigned char checksumCovrage[2];
+    unsigned char checksum[2];
+
+};
+
+typedef struct ARP{
+
+    unsigned char hardwareType[2];
+    unsigned char protocol[2];
+    unsigned char hardwareSize;
+    unsigned char protocolSize;
+    unsigned char opcodeRequest[2];
+    unsigned char senderMac[6];
+    unsigned char senderIP[4];
+    unsigned char targetMac[6];
+    unsigned char targetIP[4];
+
+};
+
+int dataSize(packetHeader pachdr){
+
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=3 ; i>=0 ; i--){
+		cc = pachdr.packetSizeFromData[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+
+	return x;
+
+}
 
 int main(){
 
@@ -32,33 +110,16 @@ int main(){
 	unsigned char ch;
 	unsigned char str[16];
 
-	fp = fopen("sample.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 
 	pcapGlobalHeader globhdr;
-	packetHeader  pachdr;
 
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
-	fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
 
-    unsigned char cc;
-    int x;
-    cc = pachdr.packetSizeFromData[3];
-    x= (int) cc;
-    //x = x | cc;
-    x = x<< 8 ;
-    cc = pachdr.packetSizeFromData[2];
-    x = x | cc;
-    x = x<< 8 ;
-    cc = pachdr.packetSizeFromData[1];
-    x = x | cc;
-    x = x<< 8 ;
-    cc = pachdr.packetSizeFromData[0];
-    x = x | cc;
+    /*int t = dataSize(pachdr);
 
-    cout << x <<endl;
-
-
-
+    cout << t <<endl;
+*/
 	for(int i =0 ; i<4 ; i++){
 
 		//cout << (int)globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
@@ -67,18 +128,37 @@ int main(){
 	}
 
 	for(int i =0 ; i<4 ; i++){
-		unsigned int l = (int)pachdr.timeStamps[i];
+		//unsigned int l = (int)pachdr.timeStamps[i];
 		//cout << l << " " ; //hahahahhahaha I am a genius;
 		//cout << (char)pachdr.timeStamps[i] << " " ; //hahahahhahaha I am a genius;
 		//printf("%.02x " , pachdr.timeStamps[i]&(0xff));
 	}
-// just need to convert the numbers in appropriate hex value and convert them to integer
+
 	int i=0;
-/*
+	int temp=0;
+
 	while(!feof(fp)){
 
-		fread(&ch,1,1,fp);
+		packetHeader  pachdr;
+		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
 
+		i++;
+		int t = dataSize(pachdr);
+
+        cout <<"\n\nPacket no : " << i << " and Packet size : " <<  t <<endl <<endl;
+		int j=0;
+		while(t--) {
+			j++;
+			fread(&ch,1,1,fp);
+			printf("%.02x " , ch&(0xff));
+			if(j%8==0) cout << "   " ;
+			if(j%16==0) {
+				cout << endl;
+				j=0;
+			}
+		}
+
+		/*
 		str[i] = ch;
 		i++;
 
@@ -109,11 +189,9 @@ int main(){
             printf(" \n");
             i=0;
         }
+	*/
 
-
-	}
-
-*/
-
+}
+	cout << "total packets = " << i <<endl;
 
 }
