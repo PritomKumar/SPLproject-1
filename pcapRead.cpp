@@ -32,13 +32,32 @@ int main(){
 	unsigned char ch;
 	unsigned char str[16];
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("sample.pcap","rb");
 
 	pcapGlobalHeader globhdr;
 	packetHeader  pachdr;
 
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
 	fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+
+    unsigned char cc;
+    int x;
+    cc = pachdr.packetSizeFromData[3];
+    x= (int) cc;
+    //x = x | cc;
+    x = x<< 8 ;
+    cc = pachdr.packetSizeFromData[2];
+    x = x | cc;
+    x = x<< 8 ;
+    cc = pachdr.packetSizeFromData[1];
+    x = x | cc;
+    x = x<< 8 ;
+    cc = pachdr.packetSizeFromData[0];
+    x = x | cc;
+
+    cout << x <<endl;
+
+
 
 	for(int i =0 ; i<4 ; i++){
 
@@ -49,9 +68,9 @@ int main(){
 
 	for(int i =0 ; i<4 ; i++){
 		unsigned int l = (int)pachdr.timeStamps[i];
-		cout << l << " " ; //hahahahhahaha I am a genius;
-		cout << (char)pachdr.timeStamps[i] << " " ; //hahahahhahaha I am a genius;
-		printf("%.02x " , pachdr.timeStamps[i]&(0xff));
+		//cout << l << " " ; //hahahahhahaha I am a genius;
+		//cout << (char)pachdr.timeStamps[i] << " " ; //hahahahhahaha I am a genius;
+		//printf("%.02x " , pachdr.timeStamps[i]&(0xff));
 	}
 // just need to convert the numbers in appropriate hex value and convert them to integer
 	int i=0;
