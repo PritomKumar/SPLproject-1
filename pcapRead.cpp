@@ -17,7 +17,7 @@ typedef struct pcapGlobalHeader { 	//total 24 bytes
 };
 
 typedef struct packetHeader{	//total 16 bytes
-		unsigned char timeStamps[4];				// timestamps in seconds from 1970
+		unsigned char timeStamps[4] ;				// timestamps in seconds from 1970
 		unsigned char packetCaptureTime[4];			// capture time in microseconds
 		unsigned char packetSizeFromData[4];		// saved data size in packets
 		unsigned char packetLengthFromWire[4];		// packet length captured from wire
@@ -169,11 +169,17 @@ int main(){
 
 	int i=0;
 
-	while(!feof(fp)){
+	while(1){
 
 		packetHeader  pachdr;
 		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+        if(feof(fp)) break;
 
+        /*
+		for(int k=0 ; k<4 ; k++ ){
+            printf("\n\n%.02x \n\n" , pachdr.timeStamps[k]& (0xff));
+		}
+		*/
 		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
 		if((int)pachdr.timeStamps[0] == 0) break;
 
@@ -191,9 +197,10 @@ int main(){
 				cout << endl;
 				j=0;
 			}
+
 		}
 
 	}
-	cout << "\nTotal packets = " << i <<endl;
+	cout << "\n\nTotal packets = " << i <<endl;
 
 }
