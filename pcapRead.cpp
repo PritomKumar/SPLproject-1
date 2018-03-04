@@ -141,16 +141,26 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp , FILE *output){
 	}
 }
 
-void printDataPayload(int len ,FILE *fp){
+void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 	cout <<"------------------DATA Payload--------------------- " << endl <<endl;
 
 	unsigned char ch;
 	int j=0;
+	fprintf(segment, "\n\n------------------DATA Payload for Packet No : %d  ---------------------\n\n", counter +1);
 	while(len--) {
 		j++;
 		fread(&ch,1,1,fp);
 		printf("%.02x " , ch&(0xff));
+
+		//writeDataPayLoadInFile();
+		if(isprint(ch)) {
+			fputc( ch ,segment);
+		}
+		else {
+			fputs(".", segment);
+		}
+
 		if(j%8==0) cout << "   " ;
 		if(j%16==0) {
 			cout << endl;
@@ -189,31 +199,36 @@ int readHeadersFromFile(int len,FILE *fp){
 												   // from length .
 		}
 
-		}
-		else if((int)ethhdr.ethType[1] == 6){
-			fread(&arphdr , sizeof(struct ARPHeader) , 1 , fp);
-			len = len - sizeof(struct ARPHeader);	   // subtracting  ARP header size
-													   // from length .
-		}
+	}
+	else if((int)ethhdr.ethType[1] == 6){
+		fread(&arphdr , sizeof(struct ARPHeader) , 1 , fp);
+		len = len - sizeof(struct ARPHeader);	   // subtracting  ARP header size
+												   // from length .
+	}
 
 	return len;
 }
+
 int main(){
 
 	FILE *fp;
 	FILE *output;
+	FILE *segment;
 	unsigned char ch;
 	unsigned char str[16];
 
 
-	fp = fopen("alice.pcap","rb");
-	output = fopen("outputFile.txt","w");
-	readAndWriteFullPcapDataAsCharacterAndInteger(fp,output);
+	fp = fopen("samplePcap.pcap","rb");
+	output = fopen("outputFile.txt","wr");
+	segment = fopen("PacketDataSegments.txt","wr");
+
+	//readAndWriteFullPcapDataAsCharacterAndInteger(fp,output);
+	fclose(output);
 
 	pcapGlobalHeader globhdr;
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
 
-	int i=0;
+	int counter=0;
 
 	while(1){
 
@@ -224,16 +239,15 @@ int main(){
 
 		int len = dataSize(pachdr) ;
 
-        cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
-		len = readHeadersFromFile(len , fp);
+        cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
+		len = readHeadersFromFile(len , fp );
 
-		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
+		printDataPayload(counter ,len , fp , segment);
 
-		printDataPayload(len , fp);
-
-		i++;
-		//if (i>761) break;  //control how many packets will be shown.
+		counter++;
+		//if (counter>1) break;  //control how many packets will be shown.
 	}
-	cout << "\n\nTotal packets = " << i <<endl;
-
+	cout << "\n\nTotal packets = " << counter <<endl;
+	fclose(segment);
+	fclose(fp);
 }
