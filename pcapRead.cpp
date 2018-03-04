@@ -57,7 +57,7 @@ typedef struct TCPHeader{
     unsigned char headerLength;
     unsigned char flags;
     unsigned char windowSizeValue[2];
-    unsigned char checksum[2];
+    unsigned char checksum[2];output = fopen("outputFile.txt","w");
     unsigned char urgentPoiter[2];
 
 };
@@ -103,11 +103,13 @@ int dataSize(packetHeader pachdr){
 void readFullPcapDataAsCharacterAndInteger(){
 
 	FILE *input;
+	FILE *output;
 	unsigned char ch;
 	unsigned char str[16];
 	int i=0;
 
 	input = fopen("samplePcap.pcap","rb");
+	output = fopen("outputFile.txt","w");
 
 	while(!feof(input)){
 
@@ -121,8 +123,15 @@ void readFullPcapDataAsCharacterAndInteger(){
 		if(i%8==0) cout << "   " ;
 		if(i%16==0){
             for(int j=0;j<16;j++){
-                if(isprint(str[j]))  cout << str[j] ; //sees if character is printable
-                else cout << ".";
+                if(isprint(str[j])) {
+                		cout << str[j] ; //sees if character is printable
+                		fputc( str[j] ,output);
+                }
+                else {
+					cout << ".";
+					fputs(".", output);
+				}
+
             }
 			cout << "   " ;
             for(int j=0;j<16;j++){
@@ -130,6 +139,7 @@ void readFullPcapDataAsCharacterAndInteger(){
 				cout << read  << " ";
             }
             printf(" \n");
+            fputs(" \n", output);
             i=0;
         }
 	}
@@ -138,12 +148,14 @@ void readFullPcapDataAsCharacterAndInteger(){
 int main(){
 
 	FILE *fp;
+	FILE *output;
 	unsigned char ch;
 	unsigned char str[16];
 
 	//readFullPcapDataAsCharacterAndInteger();
 
 	fp = fopen("samplePcap.pcap","rb");
+	output = fopen("outputFile.txt","w");
 
 	pcapGlobalHeader globhdr;
 
@@ -175,11 +187,6 @@ int main(){
 		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
         if(feof(fp)) break;
 
-        /*
-		for(int k=0 ; k<4 ; k++ ){
-            printf("\n\n%.02x \n\n" , pachdr.timeStamps[k]& (0xff));
-		}
-		*/
 		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
 		if((int)pachdr.timeStamps[0] == 0) break;
 
@@ -191,6 +198,7 @@ int main(){
 		while(t--) {
 			j++;
 			fread(&ch,1,1,fp);
+
 			printf("%.02x " , ch&(0xff));
 			if(j%8==0) cout << "   " ;
 			if(j%16==0) {
