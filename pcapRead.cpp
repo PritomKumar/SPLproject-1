@@ -25,21 +25,22 @@ typedef struct packetHeader{	//total 16 bytes
 };
 
 typedef struct  ethernetHeader{  // total 14 bytes
-                                        //**[Link Layer]**//
-    unsigned char ethDest[6];           //destination ethernet address
-    unsigned char ethSrc[6];            //source ethernet address
+                                        //[Link Layer]**//
+    unsigned char ethDestination[6];    //destination ethernet address
+    unsigned char ethSource[6];         //source ethernet address
     unsigned char ethType[2];           //ethernet type
 
 };
 
 
-typedef struct IPHeader{
+typedef struct IPHeader{	///total 20 bytes
+
                                         //**[Network Layer]**//
     unsigned char headerL;              //Header lenght
     unsigned char Explicit;             //type of service
     unsigned char ipLength[2];          //total length
     unsigned char identification[2];    //Identofication
-    unsigned char fragment[2];          //fragment
+    unsigned char fragmentOffset[2];    //fragment
     unsigned char TTL;                  //Time to live
     unsigned char protocol;             //transport layer protocol
     unsigned char headerChecksum[2];    //header checksum
@@ -57,7 +58,7 @@ typedef struct TCPHeader{
     unsigned char headerLength;
     unsigned char flags;
     unsigned char windowSizeValue[2];
-    unsigned char checksum[2];output = fopen("outputFile.txt","w");
+    unsigned char checksum[2];
     unsigned char urgentPoiter[2];
 
 };
@@ -165,35 +166,31 @@ int main(){
 
     cout << t <<endl;
 */
-	for(int i =0 ; i<4 ; i++){
-
-		//cout << (int)globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
-		//cout << (char)globhdr.magicNumber[i] << " " ; //hahahahhahaha I am a genius;
-		//printf("%.02x " , globhdr.magicNumber[i]&(0xff));
-	}
-
-	for(int i =0 ; i<4 ; i++){
-		//unsigned int l = (int)pachdr.timeStamps[i];
-		//cout << l << " " ; //hahahahhahaha I am a genius;
-		//cout << (char)pachdr.timeStamps[i] << " " ; //hahahahhahaha I am a genius;
-		//printf("%.02x " , pachdr.timeStamps[i]&(0xff));
-	}
 
 	int i=0;
 
 	while(1){
 
 		packetHeader  pachdr;
+		ethernetHeader ethhdr;
+		IPHeader iphdr;
 		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+		fread(&ethhdr , sizeof(struct ethernetHeader) , 1 , fp);
+		fread(&iphdr , sizeof(struct IPHeader) , 1 , fp);
+
         if(feof(fp)) break;
 
 		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
 		if((int)pachdr.timeStamps[0] == 0) break;
 
 		i++;
-		int t = dataSize(pachdr);
+		int t = dataSize(pachdr) ;
 
         cout <<"\n\nPacket no : " << i << " and Packet size : " <<  t <<endl <<endl;
+
+        t = t - sizeof(struct ethernetHeader);
+        t = t - sizeof(struct IPHeader);
+
 		int j=0;
 		while(t--) {
 			j++;
