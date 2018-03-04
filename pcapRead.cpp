@@ -35,7 +35,7 @@ typedef struct  ethernetHeader{  // total 14 bytes
 
 typedef struct IPHeader{	///total 20 bytes
 
-                                        //**[Network Layer]**//
+                                        //[Network Layer]**//
     unsigned char headerL;              //Header lenght
     unsigned char Explicit;             //type of service
     unsigned char ipLength[2];          //total length
@@ -72,7 +72,7 @@ typedef struct UDPHeader{
 
 };
 
-typedef struct ARP{
+typedef struct ARPHeader{
 
     unsigned char hardwareType[2];
     unsigned char protocol[2];
@@ -101,20 +101,15 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-void readFullPcapDataAsCharacterAndInteger(){
+void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp , FILE *output){
 
-	FILE *input;
-	FILE *output;
 	unsigned char ch;
 	unsigned char str[16];
 	int i=0;
 
-	input = fopen("samplePcap.pcap","rb");
-	output = fopen("outputFile.txt","w");
+	while(!feof(fp)){
 
-	while(!feof(input)){
-
-		fread(&ch,1,1,input);
+		fread(&ch,1,1,fp);
 		str[i] = ch;
 		i++;
 
@@ -125,8 +120,8 @@ void readFullPcapDataAsCharacterAndInteger(){
 		if(i%16==0){
             for(int j=0;j<16;j++){
                 if(isprint(str[j])) {
-                		cout << str[j] ; //sees if character is printable
-                		fputc( str[j] ,output);
+					cout << str[j] ; //sees if character is printable
+					fputc( str[j] ,output);
                 }
                 else {
 					cout << ".";
@@ -146,6 +141,63 @@ void readFullPcapDataAsCharacterAndInteger(){
 	}
 }
 
+void printDataPayload(int len ,FILE *fp){
+
+	cout <<"------------------DATA Payload--------------------- " << endl <<endl;
+
+	unsigned char ch;
+	int j=0;
+	while(len--) {
+		j++;
+		fread(&ch,1,1,fp);
+		printf("%.02x " , ch&(0xff));
+		if(j%8==0) cout << "   " ;
+		if(j%16==0) {
+			cout << endl;
+			j=0;
+		}
+	}
+}
+
+int readHeadersFromFile(int len,FILE *fp){
+
+	ethernetHeader ethhdr;
+	IPHeader iphdr;
+	TCPHeader tcphdr;
+	UDPHeader udphdr;
+	ARPHeader arphdr;
+
+	fread(&ethhdr , sizeof(struct ethernetHeader) , 1 , fp);
+	len = len - sizeof(struct ethernetHeader); // subtracting ethernet header size
+											   // from length .
+	//cout << endl <<(int)ethhdr.ethType[1] <<endl;
+
+	if((int)ethhdr.ethType[1] == 0){    //check the ethernet type .
+		fread(&iphdr , sizeof(struct IPHeader) , 1 , fp);
+		len = len - sizeof(struct IPHeader);	   // subtracting IP header size
+												   // from length .
+		//cout << endl <<(int)iphdr.protocol <<endl;
+
+		if( (int)iphdr.protocol == 6 ){
+			fread(&tcphdr , sizeof(struct TCPHeader) , 1 , fp);
+			len = len - sizeof(struct TCPHeader);  // subtracting TCP header size
+												   // from length .
+		}
+		else if( (int)iphdr.protocol == 17 ){
+			fread(&udphdr , sizeof(struct UDPHeader) , 1 , fp);
+			len = len - sizeof(struct UDPHeader);  // subtracting UDP header size
+												   // from length .
+		}
+
+		}
+		else if((int)ethhdr.ethType[1] == 6){
+			fread(&arphdr , sizeof(struct ARPHeader) , 1 , fp);
+			len = len - sizeof(struct ARPHeader);	   // subtracting  ARP header size
+													   // from length .
+		}
+
+	return len;
+}
 int main(){
 
 	FILE *fp;
@@ -153,58 +205,34 @@ int main(){
 	unsigned char ch;
 	unsigned char str[16];
 
-	//readFullPcapDataAsCharacterAndInteger();
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("alice.pcap","rb");
 	output = fopen("outputFile.txt","w");
+	readAndWriteFullPcapDataAsCharacterAndInteger(fp,output);
 
 	pcapGlobalHeader globhdr;
-
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
-
-    /*int t = dataSize(pachdr);
-
-    cout << t <<endl;
-*/
 
 	int i=0;
 
 	while(1){
 
 		packetHeader  pachdr;
-		ethernetHeader ethhdr;
-		IPHeader iphdr;
-		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
-		fread(&ethhdr , sizeof(struct ethernetHeader) , 1 , fp);
-		fread(&iphdr , sizeof(struct IPHeader) , 1 , fp);
 
-        if(feof(fp)) break;
+		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+		if(feof(fp)) break;
+
+		int len = dataSize(pachdr) ;
+
+        cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
+		len = readHeadersFromFile(len , fp);
 
 		//cout << "\n\n timeStamps : " << (int)pachdr.timeStamps[0] <<endl;
-		if((int)pachdr.timeStamps[0] == 0) break;
+
+		printDataPayload(len , fp);
 
 		i++;
-		int t = dataSize(pachdr) ;
-
-        cout <<"\n\nPacket no : " << i << " and Packet size : " <<  t <<endl <<endl;
-
-        t = t - sizeof(struct ethernetHeader);
-        t = t - sizeof(struct IPHeader);
-
-		int j=0;
-		while(t--) {
-			j++;
-			fread(&ch,1,1,fp);
-
-			printf("%.02x " , ch&(0xff));
-			if(j%8==0) cout << "   " ;
-			if(j%16==0) {
-				cout << endl;
-				j=0;
-			}
-
-		}
-
+		//if (i>761) break;  //control how many packets will be shown.
 	}
 	cout << "\n\nTotal packets = " << i <<endl;
 
