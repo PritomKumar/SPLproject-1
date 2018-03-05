@@ -101,12 +101,14 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp , FILE *output){
+void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
+    FILE *output;
 	unsigned char ch;
 	unsigned char str[16];
 	int i=0;
 
+    output = fopen("outputFile.txt","w");
 	while(!feof(fp)){
 
 		fread(&ch,1,1,fp);
@@ -218,12 +220,10 @@ int main(){
 	unsigned char str[16];
 
 
-	fp = fopen("samplePcap.pcap","rb");
-	output = fopen("outputFile.txt","wr");
-	segment = fopen("PacketDataSegments.txt","wr");
+	fp = fopen("alice.pcap","rb");
+	segment = fopen("PacketDataSegments.txt","w");
 
-	//readAndWriteFullPcapDataAsCharacterAndInteger(fp,output);
-	fclose(output);
+	//readAndWriteFullPcapDataAsCharacterAndInteger(fp );
 
 	pcapGlobalHeader globhdr;
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
