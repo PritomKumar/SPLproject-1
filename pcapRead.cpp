@@ -1,7 +1,5 @@
 #include<iostream>
-#include<sstream>
 #include<stdio.h>
-#include <fstream>
 
 using namespace std;
 
@@ -49,7 +47,7 @@ typedef struct IPHeader{	///total 20 bytes
 
 };
 
-typedef struct TCPHeader{
+typedef struct TCPHeader{ // total 20 bytes
 
     unsigned char sourcePort[2];
     unsigned char destPort[2];
@@ -63,7 +61,7 @@ typedef struct TCPHeader{
 
 };
 
-typedef struct UDPHeader{
+typedef struct UDPHeader{ // total 8 bytes
 
     unsigned char sourcePort[2];
     unsigned char destPort[2];
@@ -72,7 +70,7 @@ typedef struct UDPHeader{
 
 };
 
-typedef struct ARPHeader{
+typedef struct ARPHeader{ // total 28 bytes
 
     unsigned char hardwareType[2];
     unsigned char protocol[2];
