@@ -31,7 +31,7 @@ typedef struct  ethernetHeader{  // total 14 bytes
 };
 
 
-typedef struct IPHeader{	///total 20 bytes
+typedef struct IPHeader{	//total 20 bytes
 
                                         //[Network Layer]**//
     unsigned char headerL;              //Header lenght
@@ -53,7 +53,7 @@ typedef struct TCPHeader{ // total 20 bytes
     unsigned char destPort[2];
     unsigned char sequenceNumber[4];
     unsigned char acknowledgementNumber[4];
-    unsigned char headerLength;
+    unsigned char tcpSegmentLenght;
     unsigned char flags;
     unsigned char windowSizeValue[2];
     unsigned char checksum[2];
@@ -177,18 +177,18 @@ int readHeadersFromFile(int len,FILE *fp){
 	UDPHeader udphdr;
 	ARPHeader arphdr;
 
-	fread(&ethhdr , sizeof(struct ethernetHeader) , 1 , fp);
+	fread(&ethhdr , sizeof(struct ethernetHeader) , 1 , fp);  // Reading etherNet Header
 	len = len - sizeof(struct ethernetHeader); // subtracting ethernet header size
 											   // from length .
 	//cout << endl <<(int)ethhdr.ethType[1] <<endl;
 
-	if((int)ethhdr.ethType[1] == 0){    //check the ethernet type .
+	if((int)ethhdr.ethType[1] == 0){    //check the ethernet type . 0 means IPV4 and 6 means ARP
 		fread(&iphdr , sizeof(struct IPHeader) , 1 , fp);
 		len = len - sizeof(struct IPHeader);	   // subtracting IP header size
 												   // from length .
 		//cout << endl <<(int)iphdr.protocol <<endl;
 
-		if( (int)iphdr.protocol == 6 ){
+		if( (int)iphdr.protocol == 6 ){				// Check protocol ; 6 means TCP , 17 Means UDP
 			fread(&tcphdr , sizeof(struct TCPHeader) , 1 , fp);
 			len = len - sizeof(struct TCPHeader);  // subtracting TCP header size
 												   // from length .
@@ -200,7 +200,7 @@ int readHeadersFromFile(int len,FILE *fp){
 		}
 
 	}
-	else if((int)ethhdr.ethType[1] == 6){
+	else if((int)ethhdr.ethType[1] == 6){			//check the ethernet type . 0 means IPV4 and 6 means ARP
 		fread(&arphdr , sizeof(struct ARPHeader) , 1 , fp);
 		len = len - sizeof(struct ARPHeader);	   // subtracting  ARP header size
 												   // from length .
@@ -243,7 +243,7 @@ int main(){
 		printDataPayload(counter ,len , fp , segment);
 
 		counter++;
-		//if (counter>1) break;  //control how many packets will be shown.
+		//if (counter>1) break;  //control how many packets will be shown or read.
 	}
 	cout << "\n\nTotal packets = " << counter <<endl;
 	fclose(segment);
