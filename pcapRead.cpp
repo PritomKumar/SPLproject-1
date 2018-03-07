@@ -107,13 +107,17 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	int i=0;
 
     output = fopen("outputFile.txt","w");
+	cout << "All information on PCAP file . First in hexadecimal , next in character and lastly in integer" << endl<<endl;
+	fprintf(output , "All Information in PCAP file is as follows ------ \n\n");
+	fprintf(output , "   Character    \t\t Integer \n\n");
+
 	while(!feof(fp)){
 
 		fread(&ch,1,1,fp);
 		str[i] = ch;
 		i++;
-
 		printf("%.02x " , ch&(0xff));
+
 
 		int read ;
 		if(i%8==0) cout << "   " ;
@@ -130,20 +134,23 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
             }
 			cout << "   " ;
+			fputs("   " , output);
             for(int j=0;j<16;j++){
 				read = str[j] ;
 				cout << read  << " ";
+				fprintf(output , "%d " , read );
             }
             printf(" \n");
             fputs(" \n", output);
             i=0;
         }
 	}
+
+	fclose(output);
 }
 
 void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
-	cout <<"------------------DATA Payload--------------------- " << endl <<endl;
 
 	unsigned char ch;
 	int j=0;
@@ -212,40 +219,56 @@ int readHeadersFromFile(int len,FILE *fp){
 int main(){
 
 	FILE *fp;
-	FILE *output;
-	FILE *segment;
+
 	unsigned char ch;
 	unsigned char str[16];
+	int choice =0;
 
+	fp = fopen("samplePcap.pcap","rb");
 
-	fp = fopen("alice.pcap","rb");
-	segment = fopen("PacketDataSegments.txt","w");
+	cout << "What do you want to do ?" <<endl;
+	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
+	cout << "Choice 2 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
+	cout << "\t   Additionally read and count the packet numbers . " <<endl;
+	cout << "Enter your choice :  " ;
 
-	//readAndWriteFullPcapDataAsCharacterAndInteger(fp );
+	cin >> choice;
 
-	pcapGlobalHeader globhdr;
-	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
+	if(choice == 1) readAndWriteFullPcapDataAsCharacterAndInteger( fp );
 
-	int counter=0;
+	else if (choice == 2) {
 
-	while(1){
+		FILE *segment;
+		segment = fopen("PacketDataSegments.txt","w");
 
-		packetHeader  pachdr;
+		pcapGlobalHeader globhdr;
+		fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
 
-		fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
-		if(feof(fp)) break;
+		int counter=0;
 
-		int len = dataSize(pachdr) ;
+		cout <<"----------DATA Payload For Individual Packets----------- " << endl <<endl;
+		fprintf(segment , "----------DATA Payload For Individual Packets-----------\n\n ");
 
-        cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
-		len = readHeadersFromFile(len , fp );
+		while(1){
 
-		printDataPayload(counter ,len , fp , segment);
+			packetHeader  pachdr;
 
-		counter++;
-		//if (counter>1) break;  //control how many packets will be shown or read.
-	}
-	cout << "\n\nTotal packets = " << counter <<endl;
-	fclose(segment);
+			fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+			if(feof(fp)) break;
+
+			int len = dataSize(pachdr) ;
+
+			cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
+			len = readHeadersFromFile(len , fp );
+
+			printDataPayload(counter ,len , fp , segment);
+
+			counter++;
+			//if (counter>1) break;  //control how many packets will be shown or read.
+		}
+		cout << "\n\nTotal packets = " << counter <<endl;
+		fclose(segment);
+
+		}
 	fclose(fp);
 }
