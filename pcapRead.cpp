@@ -91,6 +91,7 @@ UDPHeader udphdr[10000000];
 ARPHeader arphdr[10000000];
 
 unsigned char arr[10000][10000];
+int dataPayloadSize[1000000];
 
 int dataSize(packetHeader pachdr){
 
@@ -180,7 +181,7 @@ void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 	while(len--) {
 		j++;
 		fread(&ch,1,1,fp);
-		printf("%.02x " , ch&(0xff));
+	//	printf("%.02x " , ch&(0xff));
 
 		//writeDataPayLoadInFile();
 		if(isprint(ch)) {
@@ -190,9 +191,9 @@ void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 			fputs(".", segment);
 		}
 
-		if(j%8==0) cout << "   " ;
+		//if(j%8==0) cout << "   " ;
 		if(j%16==0) {
-			cout << endl;
+			//cout << endl;
 			j=0;
 		}
 	}
@@ -243,14 +244,17 @@ int main(){
 	int choice =0;
 
 	fp = fopen("samplePcap.pcap","rb");
-
+	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
 	cout << "Choice 2 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
 	cout << "\t   Additionally read and count the packet numbers . " <<endl;
+	*/
 	cout << "Enter your choice :  " ;
 
 	cin >> choice;
+
+	int counter=0;
 
 	if(choice == 1) readAndWriteFullPcapDataAsCharacterAndInteger( fp );
 
@@ -262,7 +266,6 @@ int main(){
 		pcapGlobalHeader globhdr;
 		fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
 
-		int counter=0;
 
 		cout <<"----------DATA Payload For Individual Packets----------- " << endl <<endl;
 		fprintf(segment , "----------DATA Payload For Individual Packets-----------\n\n ");
@@ -276,9 +279,10 @@ int main(){
 
 			int len = dataSize(pachdr) ;
 
-			cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
+			//cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
 			len = readHeadersFromFile(len , fp , counter);
-			cout <<"\n\nPacket no : " << counter << " and Data Payload size : " <<  len <<endl <<endl;
+			dataPayloadSize[counter] = len;
+			//cout <<"\n\nPacket no : " << counter << " and Data Payload size : " <<  dataPayloadSize[counter] <<endl <<endl;
 
 			printDataPayload(counter ,len , fp , segment);
 
@@ -293,10 +297,11 @@ int main(){
 
 	fclose(fp);
 
-    for(int i=0 ; i < 21 ; i++){
+    for(int i=0 ; i < counter ; i++){
 
         int len = dataSizeForIPHeader( iphdr[i] );
-        cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
+      //  cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
+       // cout <<"\n\nPacket no : " << i << " and Packet payload : " <<  dataPayloadSize[i] <<endl <<endl;
 
     }
 }

@@ -15,3 +15,12 @@
 FileRead
 1.https://stackoverflow.com/questions/33568577/fread-a-struct-in-c 	
 2.https://www.geeksforgeeks.org/readwrite-structure-file-c/
+TCP
+1.http://home.mira.net/~marcop/tcpip_detail.htm
+2.http://www.tcpipguide.com/free/t_TCPFunctionsWhatTCPDoes.htm
+3.https://technet.microsoft.com/en-us/library/cc958821.aspx
+4.http://www.omnisecu.com/tcpip/tcpip-model.php
+5.https://www.lifewire.com/tcp-transmission-control-protocol-3426736
+6.http://www.informit.com/articles/article.aspx?p=28782&seqNum=3
+7.
+
