@@ -30,7 +30,6 @@ typedef struct  ethernetHeader{  // total 14 bytes
 
 };
 
-
 typedef struct IPHeader{	//total 20 bytes
 
                                         //[Network Layer]**//
@@ -90,7 +89,7 @@ TCPHeader tcphdr[10000000];
 UDPHeader udphdr[10000000];
 ARPHeader arphdr[10000000];
 
-unsigned char arr[10000][10000];
+unsigned char data[10000][10000];
 int dataPayloadSize[1000000];
 
 int dataSize(packetHeader pachdr){
@@ -106,6 +105,17 @@ int dataSize(packetHeader pachdr){
 
 	}
 	return x;
+}
+
+void printfDataArray(int counter){
+	unsigned char ch;
+	for (int i =0 ; i< counter ; i++){
+		cout <<"\n\nPacket no : " << i << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+		for(int j =0 ; j< dataPayloadSize[i] ; j++){
+			ch = data[i][j];
+			printf("%.02x " , ch&(0xff));
+		}
+    }
 }
 
 int dataSizeForIPHeader(IPHeader iphdr){
@@ -172,18 +182,22 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	fclose(output);
 }
 
-void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
-
+void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 	unsigned char ch;
+	int ct = 0 ;
 	int j=0;
 	fprintf(segment, "\n\n------------------DATA Payload for Packet No : %d  ---------------------\n\n", counter +1);
+
 	while(len--) {
 		j++;
 		fread(&ch,1,1,fp);
 	//	printf("%.02x " , ch&(0xff));
 
 		//writeDataPayLoadInFile();
+
+		data[counter][ct] = ch;
+
 		if(isprint(ch)) {
 			fputc( ch ,segment);
 		}
@@ -196,12 +210,11 @@ void printDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 			//cout << endl;
 			j=0;
 		}
+		ct++;
 	}
 }
 
 int readHeadersFromFile(int len,FILE *fp , int counter ){
-
-
 
 	fread(&ethhdr[counter] , sizeof(struct ethernetHeader) , 1 , fp);  // Reading etherNet Header
 	len = len - sizeof(struct ethernetHeader); // subtracting ethernet header size
@@ -214,7 +227,7 @@ int readHeadersFromFile(int len,FILE *fp , int counter ){
 												   // from length .
 		//cout << endl <<(int)iphdr.protocol <<endl;
 
-		if( (int)iphdr[counter].protocol == 6 ){				// Check protocol ; 6 means TCP , 17 Means UDP
+		if( (int)iphdr[counter].protocol == 6 ){	// Check protocol ; 6 means TCP , 17 Means UDP
 			fread(&tcphdr[counter] , sizeof(struct TCPHeader) , 1 , fp);
 			len = len - sizeof(struct TCPHeader);  // subtracting TCP header size
 												   // from length .
@@ -243,7 +256,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("alice.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -282,9 +295,10 @@ int main(){
 			//cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
 			len = readHeadersFromFile(len , fp , counter);
 			dataPayloadSize[counter] = len;
+
 			//cout <<"\n\nPacket no : " << counter << " and Data Payload size : " <<  dataPayloadSize[counter] <<endl <<endl;
 
-			printDataPayload(counter ,len , fp , segment);
+			printAllDataPayload(counter ,len , fp , segment);
 
 			counter++;
 			//if (counter>1) break;  //control how many packets will be shown or read.
@@ -304,4 +318,32 @@ int main(){
        // cout <<"\n\nPacket no : " << i << " and Packet payload : " <<  dataPayloadSize[i] <<endl <<endl;
 
     }
+	//printfDataArray(counter);
+
+	FILE *dataSegment;
+	dataSegment = fopen("dataFile.txt" , "w");
+
+	for(int i=0 ; i< counter ; i++){
+		if((int)ethhdr[i].ethType[1] == 0){  //checking if its IP Header
+			if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
+				if(dataPayloadSize[i] != 0){   // checks if data payload is empty or not
+					fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , dataPayloadSize[i]);
+					cout <<"\n\nPacket no : " << i << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+					for(int j =0 ; j< dataPayloadSize[i] ; j++){
+						ch = data[i][j];
+						//printf("%.02x " , ch&(0xff));
+						if(isprint(ch)) {
+							fputc( ch ,dataSegment);
+						}
+						else {
+							if(ch == '\n' ) fputs("\n", dataSegment);
+							else fputs(".", dataSegment);
+						}
+					}
+				}
+			}
+		}
+	}
+	fclose(dataSegment);
+
 }
