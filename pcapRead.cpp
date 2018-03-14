@@ -132,6 +132,20 @@ int dataSizeForIPHeader(IPHeader iphdr){
 	return x;
 }
 
+int dataSizeForTCPHeader(TCPHeader tcphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = tcphdr.sourcePort[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
 void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
     FILE *output;
@@ -328,7 +342,10 @@ int main(){
 			if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
 				if(dataPayloadSize[i] != 0){   // checks if data payload is empty or not
 					fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , dataPayloadSize[i]);
-					cout <<"\n\nPacket no : " << i << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+					cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+					//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
+					cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
+
 					for(int j =0 ; j< dataPayloadSize[i] ; j++){
 						ch = data[i][j];
 						//printf("%.02x " , ch&(0xff));
