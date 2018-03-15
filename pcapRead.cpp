@@ -108,7 +108,7 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-int initializeTestArray(int *tarray){
+void initializeTestArray(unsigned int *tarray){
 
     for(int i=0  ; i < totalPackets ; i++){
         tarray[i] = -1;
@@ -124,6 +124,20 @@ void printfDataArray(int counter){
 			printf("%.02x " , ch&(0xff));
 		}
     }
+}
+
+unsigned int IPHeaderSourceData(IPHeader iphdr){
+
+	unsigned char cc;
+    unsigned int x = 0;
+
+	for(int i=0 ; i<3 ; i++){
+		cc = iphdr.sourceIpAddr[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
 }
 
 int dataSizeForIPHeader(IPHeader iphdr){
@@ -270,7 +284,6 @@ int readHeadersFromFile(int len,FILE *fp , int counter ){
 	return len;
 }
 
-int *tarray;
 int main(){
 
 	FILE *fp;
@@ -333,7 +346,8 @@ int main(){
 
     }
 
-    tarray = new int[totalPackets];
+	unsigned int *tarray;
+    tarray = new unsigned int[totalPackets];
 
     initializeTestArray(tarray);
 	fclose(fp);
@@ -349,7 +363,7 @@ int main(){
 
 	FILE *dataSegment;
 	dataSegment = fopen("dataFile.txt" , "w");
-
+	/*
     for(int i=0 ; i< totalPackets ; i++){
         cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
         for(int j =0 ; j< 4 ; j++){
@@ -357,26 +371,26 @@ int main(){
         }
         cout << endl <<endl;
     }
-
+	*/
 	int ct2=0;
 
     for(int k=0 ; k< totalPackets ; k++){
         int ct =0 ;
 
         for(int l = 0 ; l < totalPackets ; l++){
-            if(dataSizeForTCPHeader(tcphdr[k]) != tarray[l]){
+            if(IPHeaderSourceData(iphdr[k]) != tarray[l]){
                 ct++;
             }
         }
         if(ct == totalPackets){
-            tarray[ct2] = dataSizeForTCPHeader(tcphdr[k]);
+            tarray[ct2] = IPHeaderSourceData(iphdr[k]);
             ct2++;
         }
 
     }
 
-    TCPHeader *tempTcpHdr;
-    tempTcpHdr = new TCPHeader[totalPackets];
+    IPHeader *tempIPHdr;
+    tempIPHdr = new IPHeader[totalPackets];
 
 
     int ct = 0;
@@ -384,21 +398,21 @@ int main(){
     for(int i=0 ; i< ct2 ; i++){
 
         for(int j=0 ; j< totalPackets ; j++){
-            if(tarray[i]== dataSizeForTCPHeader(tcphdr[j])){
-                tempTcpHdr[ct] = tcphdr[j];
+            if(tarray[i]== IPHeaderSourceData(iphdr[j])){
+                tempIPHdr[ct] = iphdr[j];
                 ct++;
             }
         }
     }
 
     for(int i=0 ; i< totalPackets ; i++){
-         tcphdr[i]=tempTcpHdr[i];
+         iphdr[i]=tempIPHdr[i];
     }
 
-    delete [] tempTcpHdr;
+    delete [] tempIPHdr;
 
     for(int k=0 ; k< totalPackets ; k++){
-        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[k]) <<endl <<endl;
+        cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) <<endl <<endl;
     }
 
 
