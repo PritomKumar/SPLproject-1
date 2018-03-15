@@ -89,6 +89,7 @@ TCPHeader tcphdr[10000000];
 UDPHeader udphdr[10000000];
 ARPHeader arphdr[10000000];
 
+int totalPackets;
 unsigned char data[10000][10000];
 int dataPayloadSize[1000000];
 
@@ -105,6 +106,13 @@ int dataSize(packetHeader pachdr){
 
 	}
 	return x;
+}
+
+int initializeTestArray(int *tarray){
+
+    for(int i=0  ; i < totalPackets ; i++){
+        tarray[i] = -1;
+    }
 }
 
 void printfDataArray(int counter){
@@ -262,6 +270,7 @@ int readHeadersFromFile(int len,FILE *fp , int counter ){
 	return len;
 }
 
+int *tarray;
 int main(){
 
 	FILE *fp;
@@ -270,7 +279,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -317,18 +326,22 @@ int main(){
 			counter++;
 			//if (counter>1) break;  //control how many packets will be shown or read.
 		}
-		cout << "\n\nTotal packets = " << counter <<endl;
+
+		totalPackets = counter;
+		cout << "\n\nTotal packets = " << totalPackets <<endl;
 		fclose(segment);
 
-		}
+    }
 
+    tarray = new int[totalPackets];
 
+    initializeTestArray(tarray);
 	fclose(fp);
 
-    for(int i=0 ; i < counter ; i++){
+    for(int i=0 ; i < totalPackets ; i++){
 
         int len = dataSizeForIPHeader( iphdr[i] );
-      //  cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
+       // cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
        // cout <<"\n\nPacket no : " << i << " and Packet payload : " <<  dataPayloadSize[i] <<endl <<endl;
 
     }
@@ -337,14 +350,66 @@ int main(){
 	FILE *dataSegment;
 	dataSegment = fopen("dataFile.txt" , "w");
 
-	for(int i=0 ; i< counter ; i++){
+    for(int i=0 ; i< totalPackets ; i++){
+        cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
+        for(int j =0 ; j< 4 ; j++){
+            cout << (int)iphdr[i].sourceIpAddr[j]  << "." ;
+        }
+        cout << endl <<endl;
+    }
+
+	int ct2=0;
+
+    for(int k=0 ; k< totalPackets ; k++){
+        int ct =0 ;
+
+        for(int l = 0 ; l < totalPackets ; l++){
+            if(dataSizeForTCPHeader(tcphdr[k]) != tarray[l]){
+                ct++;
+            }
+        }
+        if(ct == totalPackets){
+            tarray[ct2] = dataSizeForTCPHeader(tcphdr[k]);
+            ct2++;
+        }
+
+    }
+
+    TCPHeader *tempTcpHdr;
+    tempTcpHdr = new TCPHeader[totalPackets];
+
+
+    int ct = 0;
+
+    for(int i=0 ; i< ct2 ; i++){
+
+        for(int j=0 ; j< totalPackets ; j++){
+            if(tarray[i]== dataSizeForTCPHeader(tcphdr[j])){
+                tempTcpHdr[ct] = tcphdr[j];
+                ct++;
+            }
+        }
+    }
+
+    for(int i=0 ; i< totalPackets ; i++){
+         tcphdr[i]=tempTcpHdr[i];
+    }
+
+    delete [] tempTcpHdr;
+
+    for(int k=0 ; k< totalPackets ; k++){
+        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[k]) <<endl <<endl;
+    }
+
+
+	for(int i=0 ; i< totalPackets ; i++){
 		if((int)ethhdr[i].ethType[1] == 0){  //checking if its IP Header
 			if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
 				if(dataPayloadSize[i] != 0){   // checks if data payload is empty or not
 					fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , dataPayloadSize[i]);
-					cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+					//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
 					//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
-					cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
+					//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
 
 					for(int j =0 ; j< dataPayloadSize[i] ; j++){
 						ch = data[i][j];
@@ -361,6 +426,7 @@ int main(){
 			}
 		}
 	}
+    //cout << "\n\nTotal packets = " << totalPackets <<endl;
 	fclose(dataSegment);
 
 }
