@@ -1,4 +1,4 @@
-#include<iostream>
+    #include<iostream>
 #include<stdio.h>
 
 using namespace std;
@@ -108,7 +108,7 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-void initializeTestArray(unsigned int *tarray){
+void initializeTestArray(int *tarray){
 
     for(int i=0  ; i < totalPackets ; i++){
         tarray[i] = -1;
@@ -126,13 +126,27 @@ void printfDataArray(int counter){
     }
 }
 
-unsigned int IPHeaderSourceData(IPHeader iphdr){
+int IPHeaderSourceData(IPHeader iphdr){
 
 	unsigned char cc;
-    unsigned int x = 0;
+    int x = 0;
 
 	for(int i=0 ; i<3 ; i++){
 		cc = iphdr.sourceIpAddr[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+int IPHeaderDestinationData(IPHeader iphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<3 ; i++){
+		cc = iphdr.destIpAddr[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -346,10 +360,6 @@ int main(){
 
     }
 
-	unsigned int *tarray;
-    tarray = new unsigned int[totalPackets];
-
-    initializeTestArray(tarray);
 	fclose(fp);
 
     for(int i=0 ; i < totalPackets ; i++){
@@ -372,6 +382,11 @@ int main(){
         cout << endl <<endl;
     }
 	*/
+
+	int *tarray;
+    tarray = new int[totalPackets];
+
+    initializeTestArray(tarray);
 	int ct2=0;
 
     for(int k=0 ; k< totalPackets ; k++){
@@ -386,7 +401,6 @@ int main(){
             tarray[ct2] = IPHeaderSourceData(iphdr[k]);
             ct2++;
         }
-
     }
 
     IPHeader *tempIPHdr;
@@ -411,10 +425,76 @@ int main(){
 
     delete [] tempIPHdr;
 
-    for(int k=0 ; k< totalPackets ; k++){
-        cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) <<endl <<endl;
-    }
 
+	int sum1 = 0;
+	int sum2 = 0;
+	for(int x=0 ; x< ct2 ; x++){
+		if(tarray[x] == -1) break;
+		int ct3=0;
+
+		for(int x2=0 ; x2 < totalPackets ; x2++){
+			if(tarray[x]== IPHeaderSourceData(iphdr[x2]))
+				ct3++;
+		}
+		cout << ct3 << " " ;
+
+		sum2 = sum2 + ct3;
+		int *tarray2;
+		tarray2 = new int[totalPackets];
+
+		initializeTestArray(tarray2);
+		int ct2=0;
+
+		for(int k= sum1 ; k< sum2 ; k++){
+			int ct =0  ;
+
+			for(int l = sum1 ; l < sum2 ; l++){
+				if(IPHeaderDestinationData(iphdr[k]) != tarray2[l]){
+					ct++;
+				}
+			}
+			if(ct == sum2){
+				tarray2[ct2] = IPHeaderDestinationData(iphdr[k]);
+				ct2++;
+			}
+		}
+
+		for(int i=0 ; i< ct2 ; i++ ){
+			cout << tarray2[i] << " ";
+		}
+		cout << "\n\n";
+
+		IPHeader *tempIPHdr;
+		tempIPHdr = new IPHeader[totalPackets];
+		/*
+
+		int ct = 0;
+
+		for(int i=0 ; i< ct2 ; i++){
+
+			for(int j=sum1 ; j< sum2 ; j++){
+				if(tarray2[i]== IPHeaderDestinationData(iphdr[j])){
+					tempIPHdr[ct] = iphdr[j];
+					ct++;
+				}
+			}
+		}
+
+		for(int i=sum1 ; i< sum2; i++){
+			 iphdr[i]=tempIPHdr[i];
+		}
+		sum1 = sum1 +ct3;
+		delete [] tempIPHdr;
+		*/
+
+	}
+
+    for(int k = 0 ; k< totalPackets ; k++){
+        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) << endl <<endl;
+        //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
+        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) <<endl <<endl;
+        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  tarray[k] <<endl <<endl;
+    }
 
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)ethhdr[i].ethType[1] == 0){  //checking if its IP Header
