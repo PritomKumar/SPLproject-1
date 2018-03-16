@@ -22,7 +22,7 @@ typedef struct packetHeader{	//total 16 bytes
 
 };
 
-typedef struct  ethernetHeader{  // total 14 bytes
+typedef struct ethernetHeader{  // total 14 bytes
                                         //[Link Layer]**//
     unsigned char ethDestination[6];    //destination ethernet address
     unsigned char ethSource[6];         //source ethernet address
@@ -395,7 +395,7 @@ int main(){
                 ct++;
             }
         }
-        if(ct == totalPackets && IPHeaderSourceData(iphdr[k])!=0){
+        if(ct == totalPackets ){
             tarray[ct2] = IPHeaderSourceData(iphdr[k]);
             ct2++;
         }
@@ -428,15 +428,16 @@ int main(){
 		cout << tarray[i] << " ";
 	}
 	cout << "\n\n";
-	*/
+*/
 	int sum1 = 0;
 	int sum2 = 0;
-	for(int x=0 ; x< ct2 ; x++){
+	for(int x=0 ; x< totalPackets ; x++){
 		if(tarray[x] == -1) break;
 		int ct3=0;
 
 		for(int x2=0 ; x2 < totalPackets ; x2++){
 			if(tarray[x]== IPHeaderSourceData(iphdr[x2]))
+				//cout << tarray[x] << " " ;
 				ct3++;
 		}
 		cout << ct3 << " " ;
@@ -449,14 +450,14 @@ int main(){
 		int ct2=0;
 
 		for(int k= sum1 ; k< sum2 ; k++){
-			int ct =sum1  ;
+			int ct =0 ;
 
-			for(int l = 0 ; l < sum2-sum1 ; l++){
+			for(int l = 0 ; l < ct3 ; l++){
 				if(IPHeaderDestinationData(iphdr[k]) != tarray2[l]){
 					ct++;
 				}
 			}
-			if(ct == sum2 && IPHeaderDestinationData(iphdr[k])!=0 ){
+			if(ct == ct3  ){
 				tarray2[ct2] = IPHeaderDestinationData(iphdr[k]);
 				ct2++;
 			}
@@ -466,12 +467,12 @@ int main(){
 			cout << tarray2[i] << " ";
 		}
 		cout << "\n\n";
-/*
+
 		IPHeader *tempIPHdr;
 		tempIPHdr = new IPHeader[totalPackets];
 
 
-		int ct = 0;
+		int ct = sum1;
 
 		for(int i=0 ; i< ct2 ; i++){
 
@@ -487,13 +488,15 @@ int main(){
 			 iphdr[i]=tempIPHdr[i];
 		}
 		delete [] tempIPHdr;
-*/
+
 		sum1 = sum1 +ct3;
 
 	}
 
     for(int k = 0 ; k< totalPackets ; k++){
-       // cout <<"\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k])  <<endl;
+        cout <<"\nPacket no : " << k+1 << " and Source port : " <<  (int)iphdr[k].sourceIpAddr[0]  << "."  << (int)iphdr[k].sourceIpAddr[1] << "."
+        << (int)iphdr[k].sourceIpAddr[2] << "." <<  (int)iphdr[k].sourceIpAddr[3]<< " and Destination port : " << (int)iphdr[k].destIpAddr[0] << "."
+         << (int)iphdr[k].destIpAddr[1] << "." << (int)iphdr[k].destIpAddr[2] << "." << (int)iphdr[k].destIpAddr[3] <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) <<endl <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  tarray[k] <<endl <<endl;
