@@ -94,8 +94,6 @@ unsigned char data[10000][10000];
 int dataPayloadSize[1000000];
 
 int dataSize(packetHeader pachdr){
-
-
 	unsigned char cc;
     int x = 0;
 
@@ -108,9 +106,9 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-void initializeTestArray(int *tarray){
+void initializeTestArray(int *tarray ,int len){
 
-    for(int i=0  ; i < totalPackets ; i++){
+    for(int i=0  ; i < len ; i++){
         tarray[i] = -1;
     }
 }
@@ -306,7 +304,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("alice.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -386,7 +384,7 @@ int main(){
 	int *tarray;
     tarray = new int[totalPackets];
 
-    initializeTestArray(tarray);
+    initializeTestArray(tarray , totalPackets);
 	int ct2=0;
 
     for(int k=0 ; k< totalPackets ; k++){
@@ -425,7 +423,11 @@ int main(){
 
     delete [] tempIPHdr;
 
-
+	for(int i=0 ; i< totalPackets ; i++ ){
+		cout << tarray[i] << " ";
+	}
+	cout << "\n\n";
+	/*
 	int sum1 = 0;
 	int sum2 = 0;
 	for(int x=0 ; x< ct2 ; x++){
@@ -438,17 +440,18 @@ int main(){
 		}
 		cout << ct3 << " " ;
 
+
 		sum2 = sum2 + ct3;
 		int *tarray2;
-		tarray2 = new int[totalPackets];
+		tarray2 = new int[ct3];
 
-		initializeTestArray(tarray2);
+		initializeTestArray(tarray2 , ct3);
 		int ct2=0;
 
 		for(int k= sum1 ; k< sum2 ; k++){
-			int ct =0  ;
+			int ct =sum1  ;
 
-			for(int l = sum1 ; l < sum2 ; l++){
+			for(int l = 0 ; l < sum2-sum1 ; l++){
 				if(IPHeaderDestinationData(iphdr[k]) != tarray2[l]){
 					ct++;
 				}
@@ -466,7 +469,7 @@ int main(){
 
 		IPHeader *tempIPHdr;
 		tempIPHdr = new IPHeader[totalPackets];
-		/*
+
 
 		int ct = 0;
 
@@ -483,12 +486,12 @@ int main(){
 		for(int i=sum1 ; i< sum2; i++){
 			 iphdr[i]=tempIPHdr[i];
 		}
-		sum1 = sum1 +ct3;
 		delete [] tempIPHdr;
-		*/
+
+		sum1 = sum1 +ct3;
 
 	}
-
+*/
     for(int k = 0 ; k< totalPackets ; k++){
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) << endl <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
