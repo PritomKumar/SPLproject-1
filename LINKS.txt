@@ -29,4 +29,8 @@ Sequence Number
 2.http://www.freesoft.org/CIE/Course/Section4/8.htm
 3.https://www.quora.com/Why-is-TCP-used-as-a-sequence-number-in-the-header
 4.http://www.firewall.cx/networking-topics/protocols/tcp/134-tcp-seq-ack-numbers.html
-
+5.https://www.youtube.com/watch?v=8XJPZttC4RM
+6.https://youtu.be/F27PLin3TV0
+7.https://youtu.be/wQ4_N73duO0
+8.https://youtu.be/IYR08ae_MOc
+9.https://youtu.be/4IMc3CaMhyY
