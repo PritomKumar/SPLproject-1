@@ -35,3 +35,13 @@ Sequence Number
 8.https://youtu.be/IYR08ae_MOc
 9.https://youtu.be/4IMc3CaMhyY
 10.http://www.networksorcery.com/enp/protocol/tcp.htm
+
+port******
+
+1.http://searchnetworking.techtarget.com/definition/port
+2.https://en.wikipedia.org/wiki/Port_(computer_networking)
+3.https://www.techopedia.com/definition/24717/network-port
+4.https://www.lifewire.com/computer-port-usage-817366
+5.http://www.pearsonitcertification.com/articles/article.aspx?p=1868080
+6.https://www.webopedia.com/quick_ref/portnumbers.asp
+7.https://docs.oracle.com/javase/tutorial/networking/sockets/definition.html
