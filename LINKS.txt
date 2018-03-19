@@ -22,5 +22,11 @@ TCP
 4.http://www.omnisecu.com/tcpip/tcpip-model.php
 5.https://www.lifewire.com/tcp-transmission-control-protocol-3426736
 6.http://www.informit.com/articles/article.aspx?p=28782&seqNum=3
-7.
+
+Sequence Number
+
+1.http://www.lovemytool.com/blog/2010/08/practical-tcp-series-sequence-and-acknowledgement-numbers-by-chris-greer.html
+2.http://www.freesoft.org/CIE/Course/Section4/8.htm
+3.https://www.quora.com/Why-is-TCP-used-as-a-sequence-number-in-the-header
+4.http://www.firewall.cx/networking-topics/protocols/tcp/134-tcp-seq-ack-numbers.html
 
