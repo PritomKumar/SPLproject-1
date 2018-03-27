@@ -474,7 +474,9 @@ int main(){
 		cout << "\n\n";
 		*/
 		IPHeader *tempIPHdr;
+		TCPHeader *tempTCPHdr;
 		tempIPHdr = new IPHeader[totalPackets];
+		tempTCPHdr = new TCPHeader[totalPackets];
 
 
 		int ct = sum1;
@@ -484,6 +486,7 @@ int main(){
 			for(int j=sum1 ; j< sum2 ; j++){
 				if(tarray2[i]== IPHeaderDestinationData(iphdr[j])){
 					tempIPHdr[ct] = iphdr[j];
+					 tempTCPHdr[ct] = tcphdr[j];
 					ct++;
 				}
 			}
@@ -491,6 +494,7 @@ int main(){
 
 		for(int i=sum1 ; i< sum2; i++){
 			 iphdr[i]=tempIPHdr[i];
+			 tcphdr[i]=tempTCPHdr[i];
 		}
 		delete [] tempIPHdr;
 
