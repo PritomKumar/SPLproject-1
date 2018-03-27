@@ -166,7 +166,7 @@ int dataSizeForIPHeader(IPHeader iphdr){
 	return x;
 }
 
-int dataSizeForTCPHeader(TCPHeader tcphdr){
+int sourcePortFromTcpHeader(TCPHeader tcphdr){
 
 	unsigned char cc;
     int x = 0;
@@ -402,7 +402,9 @@ int main(){
     }
 
     IPHeader *tempIPHdr;
+    TCPHeader *tempTCPHdr;
     tempIPHdr = new IPHeader[totalPackets];
+    tempTCPHdr = new TCPHeader[totalPackets];
 
 
     int ct = 0;
@@ -412,6 +414,7 @@ int main(){
         for(int j=0 ; j< totalPackets ; j++){
             if(tarray[i]== IPHeaderSourceData(iphdr[j])){
                 tempIPHdr[ct] = iphdr[j];
+                tempTCPHdr[ct] = tcphdr[j];
                 ct++;
             }
         }
@@ -420,6 +423,7 @@ int main(){
     for(int i=0 ; i< totalPackets ; i++){
 
          iphdr[i]=tempIPHdr[i];
+         tcphdr[i]=tempTCPHdr[i];
     }
 
     delete [] tempIPHdr;
@@ -515,19 +519,19 @@ int main(){
 	}
 
 	for(int i=0 ; i< totalPackets ; i++ ){
-		cout << tarray2[i] << " ";
+		//cout << tarray2[i] << " ";
 	}
 	cout << "\n\n";
-/*
+
     for(int k = 0 ; k< totalPackets ; k++){
-        cout <<"\nPacket no : " << k+1 << " and Source port : " <<  (int)iphdr[k].sourceIpAddr[0]  << "."  << (int)iphdr[k].sourceIpAddr[1] << "."
-        << (int)iphdr[k].sourceIpAddr[2] << "." <<  (int)iphdr[k].sourceIpAddr[3]<< " and Destination port : " << (int)iphdr[k].destIpAddr[0] << "."
+        cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)iphdr[k].sourceIpAddr[0]  << "."  << (int)iphdr[k].sourceIpAddr[1] << "."
+        << (int)iphdr[k].sourceIpAddr[2] << "." <<  (int)iphdr[k].sourceIpAddr[3]<< " and Destination IP Address : " << (int)iphdr[k].destIpAddr[0] << "."
 		<< (int)iphdr[k].destIpAddr[1] << "." << (int)iphdr[k].destIpAddr[2] << "." << (int)iphdr[k].destIpAddr[3] <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
-        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  IPHeaderSourceData(iphdr[k]) <<endl <<endl;
+        cout <<"\nPacket no : " << k+1 << " and Source port : " <<  sourcePortFromTcpHeader(tcphdr[k]) <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  tarray[k] <<endl <<endl;
     }
-*/
+
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)ethhdr[i].ethType[1] == 0){  //checking if its IP Header
 			if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
