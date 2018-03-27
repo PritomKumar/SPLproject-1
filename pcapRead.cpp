@@ -1,4 +1,4 @@
-    #include<iostream>
+#include<iostream>
 #include<stdio.h>
 
 using namespace std;
@@ -304,7 +304,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
