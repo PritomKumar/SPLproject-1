@@ -106,10 +106,10 @@ int dataSize(packetHeader pachdr){
 	return x;
 }
 
-void initializeTestArray(int *tarray ,int len){
+void initializeTestArray(int *sourceIPAdressDataArray ,int len){
 
     for(int i=0  ; i < len ; i++){
-        tarray[i] = -1;
+        sourceIPAdressDataArray[i] = -1;
     }
 }
 
@@ -381,22 +381,22 @@ int main(){
     }
 	*/
 
-	int *tarray;
-    tarray = new int[totalPackets];
+	int *sourceIPAdressDataArray;
+    sourceIPAdressDataArray = new int[totalPackets];
 
-    initializeTestArray(tarray , totalPackets);
+    initializeTestArray(sourceIPAdressDataArray , totalPackets);
 	int ct2=0;
 
     for(int k=0 ; k< totalPackets ; k++){
         int ct =0 ;
 
         for(int l = 0 ; l < totalPackets ; l++){
-            if(IPHeaderSourceData(iphdr[k]) != tarray[l]){
+            if(IPHeaderSourceData(iphdr[k]) != sourceIPAdressDataArray[l]){
                 ct++;
             }
         }
         if(ct == totalPackets ){
-            tarray[ct2] = IPHeaderSourceData(iphdr[k]);
+            sourceIPAdressDataArray[ct2] = IPHeaderSourceData(iphdr[k]);
             ct2++;
         }
     }
@@ -412,7 +412,7 @@ int main(){
     for(int i=0 ; i< ct2 ; i++){
 
         for(int j=0 ; j< totalPackets ; j++){
-            if(tarray[i]== IPHeaderSourceData(iphdr[j])){
+            if(sourceIPAdressDataArray[i]== IPHeaderSourceData(iphdr[j])){
                 tempIPHdr[ct] = iphdr[j];
                 tempTCPHdr[ct] = tcphdr[j];
                 ct++;
@@ -429,23 +429,23 @@ int main(){
     delete [] tempIPHdr;
 /*
 	for(int i=0 ; i< totalPackets ; i++ ){
-		cout << tarray[i] << " ";
+		cout << sourceIPAdressDataArray[i] << " ";
 	}
 	cout << "\n\n";
 */
-	int *tarray2;
-	tarray2 = new int[totalPackets];
-	initializeTestArray(tarray2 , totalPackets);
+	int *destIPAdressDataArray;
+	destIPAdressDataArray = new int[totalPackets];
+	initializeTestArray(destIPAdressDataArray , totalPackets);
 
 	int sum1 = 0;
 	int sum2 = 0;
 	for(int x=0 ; x< totalPackets ; x++){
-		if(tarray[x] == -1) break;
+		if(sourceIPAdressDataArray[x] == -1) break;
 		int ct3=0;
 
 		for(int x2=0 ; x2 < totalPackets ; x2++){
-			if(tarray[x]== IPHeaderSourceData(iphdr[x2]))
-				//cout << tarray[x] << " " ;
+			if(sourceIPAdressDataArray[x]== IPHeaderSourceData(iphdr[x2]))
+				//cout << sourceIPAdressDataArray[x] << " " ;
 				ct3++;
 		}
 		//cout << ct3 << " " ;
@@ -458,18 +458,18 @@ int main(){
 			int ct =0 ;
 
 			for(int l = sum1 ; l < sum2 ; l++){
-				if(IPHeaderDestinationData(iphdr[k]) != tarray2[l]){
+				if(IPHeaderDestinationData(iphdr[k]) != destIPAdressDataArray[l]){
 					ct++;
 				}
 			}
 			if(ct == ct3  ){
-				tarray2[ct2] = IPHeaderDestinationData(iphdr[k]);
+				destIPAdressDataArray[ct2] = IPHeaderDestinationData(iphdr[k]);
 				ct2++;
 			}
 		}
 		/*
 		for(int i=0 ; i< ct2 ; i++ ){
-			cout << tarray2[i] << " ";
+			cout << destIPAdressDataArray[i] << " ";
 		}
 		cout << "\n\n";
 		*/
@@ -484,7 +484,7 @@ int main(){
 		for(int i=sum1 ; i< sum2 ; i++){
 
 			for(int j=sum1 ; j< sum2 ; j++){
-				if(tarray2[i]== IPHeaderDestinationData(iphdr[j])){
+				if(destIPAdressDataArray[i]== IPHeaderDestinationData(iphdr[j])){
 					tempIPHdr[ct] = iphdr[j];
 					 tempTCPHdr[ct] = tcphdr[j];
 					ct++;
@@ -507,23 +507,23 @@ int main(){
 
 	int ct4=0;
 	for(int i=0 ; i < totalPackets ; i++){
-		if(tarray2[i] != -1){
-			tempArray[ct4] = tarray2[i];
+		if(destIPAdressDataArray[i] != -1){
+			tempArray[ct4] = destIPAdressDataArray[i];
 			ct4++;
 		}
 			for(int j =0 ; j< totalPackets ; j++){
-				if( tempArray[ct4]==tarray2[j]){
-					tarray2[j] = -1;
+				if( tempArray[ct4]==destIPAdressDataArray[j]){
+					destIPAdressDataArray[j] = -1;
 				}
 			}
 
 	}
 	for(int i=0 ; i< totalPackets ; i++){
-		tarray2[i] = tempArray[i];
+		destIPAdressDataArray[i] = tempArray[i];
 	}
 
 	for(int i=0 ; i< totalPackets ; i++ ){
-		//cout << tarray2[i] << " ";
+		//cout << destIPAdressDataArray[i] << " ";
 	}
 	cout << "\n\n";
 
@@ -533,7 +533,7 @@ int main(){
 		<< (int)iphdr[k].destIpAddr[1] << "." << (int)iphdr[k].destIpAddr[2] << "." << (int)iphdr[k].destIpAddr[3] <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
         cout <<"\nPacket no : " << k+1 << " and Source port : " <<  sourcePortFromTcpHeader(tcphdr[k]) <<endl;
-        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  tarray[k] <<endl <<endl;
+        //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
 
 	for(int i=0 ; i< totalPackets ; i++){
