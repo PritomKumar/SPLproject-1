@@ -107,107 +107,6 @@ int totalPackets;
 unsigned char data[100][100];
 int dataPayloadSize[10000];
 
-int dataSize(packetHeader pachdr){
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=3 ; i>=0 ; i--){
-		cc = pachdr.packetSizeFromData[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
-void initializeTestArray(int *sourceIPAdressDataArray ,int len){
-
-    for(int i=0  ; i < len ; i++){
-        sourceIPAdressDataArray[i] = -1;
-    }
-}
-
-void printfDataArray(int counter){
-	unsigned char ch;
-	for (int i =0 ; i< counter ; i++){
-		cout <<"\n\nPacket no : " << i << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
-		for(int j =0 ; j< dataPayloadSize[i] ; j++){
-			ch = data[i][j];
-			printf("%.02x " , ch&(0xff));
-		}
-    }
-}
-
-int IPHeaderSourceData(IPHeader iphdr){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<3 ; i++){
-		cc = iphdr.sourceIpAddr[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
-int IPHeaderDestinationData(IPHeader iphdr){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<3 ; i++){
-		cc = iphdr.destIpAddr[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
-int dataSizeForIPHeader(wholePacket packet){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<2 ; i++){
-		cc = packet.iphdr.ipLength[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
-int sourcePortFromTcpHeader(TCPHeader tcphdr){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<2 ; i++){
-		cc = tcphdr.sourcePort[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
-int destPortFromTcpHeader(TCPHeader tcphdr){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<2 ; i++){
-		cc = tcphdr.destPort[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
-
 void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
     FILE *output;
@@ -258,6 +157,107 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	fclose(output);
 }
 
+int dataSizeForIPHeader(wholePacket packet){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = packet.iphdr.ipLength[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+int dataSize(packetHeader pachdr){
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=3 ; i>=0 ; i--){
+		cc = pachdr.packetSizeFromData[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+void initializeTestArray(int *sourceIPAdressDataArray ,int len){
+
+    for(int i=0  ; i < len ; i++){
+        sourceIPAdressDataArray[i] = -1;
+    }
+}
+
+void printfDataArray(int counter){
+	unsigned char ch;
+	for (int i =0 ; i< counter ; i++){
+		cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  packet[i].dataPayloadSize <<endl <<endl;
+		for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
+			ch = packet[i].data[j];
+			printf("%.02x " , ch&(0xff));
+		}
+    }
+}
+
+int IPHeaderSourceData(IPHeader iphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<3 ; i++){
+		cc = iphdr.sourceIpAddr[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+int IPHeaderDestinationData(IPHeader iphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<3 ; i++){
+		cc = iphdr.destIpAddr[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+int sourcePortFromTcpHeader(TCPHeader tcphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = tcphdr.sourcePort[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+int destPortFromTcpHeader(TCPHeader tcphdr){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = tcphdr.destPort[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
 void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 	unsigned char ch;
@@ -291,13 +291,6 @@ void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 }
 
 int readHeadersFromFile(int len,FILE *fp , int counter ){
-
-	//ethernetHeader tempEthHdr;
-	//IPHeader tempIPHdr;
-	//TCPHeader tempTCPHdr;
-	//UDPHeader tempUDPHdr;
-	//ARPHeader tempARPHdr;
-
 
 	fread(&packet[counter].ethhdr , sizeof(struct ethernetHeader) , 1 , fp);  // Reading etherNet Header
 	//packet[counter].ethhdr = tempEthHdr;
@@ -400,24 +393,25 @@ int main(){
     for(int i=0 ; i < totalPackets ; i++){
 
         int len = dataSizeForIPHeader( packet[i] );
-        cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
-       // cout <<"\n\nPacket no : " << i << " and Packet payload : " <<  dataPayloadSize[i] <<endl <<endl;
+       // cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
+        //cout <<"\n\nPacket no : " << i+1 << " and Packet payload : " <<  packet[i].dataPayloadSize <<endl <<endl;
 
     }
+
 	//printfDataArray(counter);
 
 	FILE *dataSegment;
 	dataSegment = fopen("dataFile.txt" , "w");
-	/*
+/*
     for(int i=0 ; i< totalPackets ; i++){
         cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
         for(int j =0 ; j< 4 ; j++){
-            cout << (int)iphdr[i].sourceIpAddr[j]  << "." ;
+            cout << (int)packet[i].iphdr.sourceIpAddr[j]  << "." ;
         }
         cout << endl <<endl;
     }
-	*/
 
+*/
     for(int i=0 ; i< totalPackets -1; i++){
 		for(int j=0 ; j < totalPackets -i -1; j++){
 
