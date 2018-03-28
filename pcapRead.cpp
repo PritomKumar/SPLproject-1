@@ -83,6 +83,18 @@ typedef struct ARPHeader{ // total 28 bytes
 
 };
 
+typedef struct packet{
+
+	ethernetHeader ethhdr;
+	IPHeader iphdr;
+	TCPHeader tcphdr;
+	UDPHeader udphdr;
+	ARPHeader arphdr;
+	int dataPayloadSize;
+	unsigned char data[100000];
+
+};
+
 ethernetHeader ethhdr[10000000];
 IPHeader iphdr[10000000];
 TCPHeader tcphdr[10000000];
@@ -90,7 +102,7 @@ UDPHeader udphdr[10000000];
 ARPHeader arphdr[10000000];
 
 int totalPackets;
-unsigned char data[10000][10000];
+unsigned char data[10000][100000];
 int dataPayloadSize[1000000];
 
 int dataSize(packetHeader pachdr){
@@ -457,6 +469,8 @@ int main(){
 							TCPHeader temp2 = tcphdr[j];
 							tcphdr[j] = tcphdr[j+1];
 							tcphdr[j+1] = temp2;
+
+
 						}
 					}
 				}
