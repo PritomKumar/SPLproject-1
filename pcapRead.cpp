@@ -91,11 +91,11 @@ typedef struct wholePacket{
 	UDPHeader udphdr;
 	ARPHeader arphdr;
 	int dataPayloadSize;
-	unsigned char data[2500];
+	unsigned char data[10000];
 
 };
 
-wholePacket packet[5000];
+wholePacket packet[10000];
 
 int totalPackets;
 
@@ -149,13 +149,13 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	fclose(output);
 }
 
-int dataSizeForIPHeader(IPHeader iphdr){
+int dataSizeForIPHeader(unsigned char *ipLength){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = iphdr.ipLength[i];
+		cc = ipLength[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -194,13 +194,13 @@ void printfDataArray(int counter){
     }
 }
 
-int IPHeaderSourceData(wholePacket packet){
+int IPHeaderSourceData(unsigned char *sourceIpAddr){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<3 ; i++){
-		cc = packet.iphdr.sourceIpAddr[i];
+		cc = sourceIpAddr[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -208,13 +208,13 @@ int IPHeaderSourceData(wholePacket packet){
 	return x;
 }
 
-int IPHeaderDestinationData(wholePacket packet){
+int IPHeaderDestinationData(unsigned char *destIpAddr){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<3 ; i++){
-		cc = packet.iphdr.destIpAddr[i];
+		cc = destIpAddr[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -222,13 +222,13 @@ int IPHeaderDestinationData(wholePacket packet){
 	return x;
 }
 
-int sourcePortFromTcpHeader(wholePacket packet){
+int sourcePortFromTcpHeader(unsigned char *sourcePort){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = packet.tcphdr.sourcePort[i];
+		cc = sourcePort[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -236,13 +236,13 @@ int sourcePortFromTcpHeader(wholePacket packet){
 	return x;
 }
 
-int destPortFromTcpHeader(wholePacket packet){
+int destPortFromTcpHeader(unsigned char *destPort){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = packet.tcphdr.destPort[i];
+		cc = destPort[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -255,7 +255,7 @@ void sortPacketsAccordingToSourceIPAddress(){
 	for(int i=0 ; i< totalPackets -1; i++){
 		for(int j=0 ; j < totalPackets -i -1; j++){
 
-			if(IPHeaderSourceData(packet[j]) >  IPHeaderSourceData(packet[j+1]) ){
+			if(IPHeaderSourceData(packet[j].iphdr.sourceIpAddr) >  IPHeaderSourceData(packet[j+1].iphdr.sourceIpAddr) ){
 				wholePacket temp = packet[j];
 				packet[j] = packet[j+1] ;
 				packet[j+1] = temp;
@@ -269,8 +269,8 @@ void sortPacketsAccordingToDestinationIPAddress(){
 
 	for(int i=0 ; i< totalPackets -1; i++){
 		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) >  IPHeaderDestinationData(packet[j+1]) ){
+			if(IPHeaderSourceData(packet[j].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[j+1].iphdr.sourceIpAddr) ){
+				if(IPHeaderDestinationData(packet[j].iphdr.destIpAddr) >  IPHeaderDestinationData(packet[j+1].iphdr.destIpAddr) ){
 					wholePacket temp = packet[j];
 					packet[j] = packet[j+1] ;
 					packet[j+1] = temp;
@@ -285,9 +285,9 @@ void sortPacketsAccordingToSourcePort(){
 
 	for(int i=0 ; i< totalPackets -1; i++){
 		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
-					if(sourcePortFromTcpHeader(packet[j]) >  sourcePortFromTcpHeader(packet[j+1])){
+			if(IPHeaderSourceData(packet[j].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[j+1].iphdr.sourceIpAddr) ){
+				if(IPHeaderDestinationData(packet[j].iphdr.destIpAddr) == IPHeaderDestinationData(packet[j+1].iphdr.destIpAddr) ){
+					if(sourcePortFromTcpHeader(packet[j].tcphdr.sourcePort) >  sourcePortFromTcpHeader(packet[j+1].tcphdr.sourcePort)){
 						wholePacket temp = packet[j];
 						packet[j] = packet[j+1] ;
 						packet[j+1] = temp;
@@ -303,10 +303,10 @@ void sortPacketsAccordingToDestinationPort(){
 
 	 for(int i=0 ; i< totalPackets -1; i++){
 		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
-					if(sourcePortFromTcpHeader(packet[j]) ==  sourcePortFromTcpHeader(packet[j+1])){
-						if(destPortFromTcpHeader(packet[j]) >  destPortFromTcpHeader(packet[j+1])){
+			if(IPHeaderSourceData(packet[j].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[j+1].iphdr.sourceIpAddr) ){
+				if(IPHeaderDestinationData(packet[j].iphdr.destIpAddr) == IPHeaderDestinationData(packet[j+1].iphdr.destIpAddr) ){
+					if(sourcePortFromTcpHeader(packet[j].tcphdr.sourcePort) ==  sourcePortFromTcpHeader(packet[j+1].tcphdr.sourcePort)){
+						if(destPortFromTcpHeader(packet[j].tcphdr.destPort) >  destPortFromTcpHeader(packet[j+1].tcphdr.destPort)){
 							wholePacket temp = packet[j];
 							packet[j] = packet[j+1] ;
 							packet[j+1] = temp;
@@ -453,8 +453,8 @@ int main(){
 
     for(int i=0 ; i < totalPackets ; i++){
 
-        int len = dataSizeForIPHeader( packet[i].iphdr );
-       // cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
+        int len = dataSizeForIPHeader( packet[i].iphdr.ipLength );
+       	//cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
         //cout <<"\n\nPacket no : " << i+1 << " and Packet payload : " <<  packet[i].dataPayloadSize <<endl <<endl;
 
     }
@@ -473,25 +473,25 @@ int main(){
     }
 
 */
-	//sortPacketsAccordingToSourceIPAddress();
+	sortPacketsAccordingToSourceIPAddress();
 
-	//sortPacketsAccordingToDestinationIPAddress();
+	sortPacketsAccordingToDestinationIPAddress();
 
-	//sortPacketsAccordingToSourcePort();
+	sortPacketsAccordingToSourcePort();
 
-	//sortPacketsAccordingToDestinationPort();
+	sortPacketsAccordingToDestinationPort();
 
-/*
+
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
         << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
 		<< (int)packet[k].iphdr.destIpAddr[1] << "." << (int)packet[k].iphdr.destIpAddr[2] << "." << (int)packet[k].iphdr.destIpAddr[3] <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
-        cout <<"\nPacket no : " << k+1 << " and Source port : " <<  sourcePortFromTcpHeader(packet[k])
-        << " and Destination port : " <<  destPortFromTcpHeader(packet[k]) <<endl;
+        cout <<"\nPacket no : " << k+1 << " and Source port : " <<  sourcePortFromTcpHeader(packet[k].tcphdr.sourcePort)
+        << " and Destination port : " <<  destPortFromTcpHeader(packet[k].tcphdr.destPort) <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
-*/
+
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
