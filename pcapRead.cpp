@@ -304,7 +304,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("alice.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -444,6 +444,8 @@ int main(){
 		int ct3=0;
 
 		for(int j=0 ; j < totalPackets ; j++){
+			//if(sourceIPAdressDataArray[i] != IPHeaderSourceData(iphdr[j])) break;
+
 			if(sourceIPAdressDataArray[i]== IPHeaderSourceData(iphdr[j]))
 				//cout << sourceIPAdressDataArray[i] << " " ;
 				ct3++;
@@ -467,12 +469,12 @@ int main(){
 				ct2++;
 			}
 		}
-		/*
+/*
 		for(int i=0 ; i< ct2 ; i++ ){
 			cout << destIPAdressDataArray[i] << " ";
 		}
 		cout << "\n\n";
-		*/
+*/
 		IPHeader *tempIPHdr;
 		TCPHeader *tempTCPHdr;
 		tempIPHdr = new IPHeader[totalPackets];
@@ -521,19 +523,21 @@ int main(){
 	for(int i=0 ; i< totalPackets ; i++){
 		destIPAdressDataArray[i] = tempArray[i];
 	}
-
+/*
 	for(int i=0 ; i< totalPackets ; i++ ){
 		cout << destIPAdressDataArray[i] << " ";
 	}
 	cout << "\n\n";
+*/
 
 	int *sourcePortArray;
 	sourcePortArray = new int[totalPackets];
 	initializeTestArray(sourcePortArray , totalPackets);
 
-	int sum1 = 0;
-	int sum2 = 0;
-	for(int i=0 , p=0 ; i< totalPackets ; i++, p++){
+	sum1 = 0;
+	sum2 = 0;
+	for(int i=0 , p=0 ; i< totalPackets ; ){
+		if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
 		if(sourceIPAdressDataArray[i] == -1 || destIPAdressDataArray[p] == -1) break;
 		int ct3=0;
 
@@ -547,9 +551,12 @@ int main(){
 
 			}
 		}
+
 		//cout << ct3 << " " ;
 
 		sum2 = sum2 + ct3;
+		if(sourceIPAdressDataArray[i] != IPHeaderSourceData(iphdr[sum2+1]) ) i++;
+		if(destIPAdressDataArray[p] != IPHeaderDestinationData(iphdr[sum2+1])) p++;
 
 		int ct2=sum1;
 
@@ -566,12 +573,12 @@ int main(){
 				ct2++;
 			}
 		}
-		/*
+/*
 		for(int i=0 ; i< ct2 ; i++ ){
 			cout << sourcePortArray[i] << " ";
 		}
 		cout << "\n\n";
-		*/
+*/
 		IPHeader *tempIPHdr;
 		TCPHeader *tempTCPHdr;
 		tempIPHdr = new IPHeader[totalPackets];
@@ -585,7 +592,7 @@ int main(){
 			for(int j=sum1 ; j< sum2 ; j++){
 				if(sourcePortArray[i]== sourcePortFromTcpHeader(tcphdr[j])){
 					tempIPHdr[ct] = iphdr[j];
-					 tempTCPHdr[ct] = tcphdr[j];
+					tempTCPHdr[ct] = tcphdr[j];
 					ct++;
 				}
 			}
@@ -598,8 +605,36 @@ int main(){
 		delete [] tempIPHdr;
 
 		sum1 = sum1 +ct3;
+		}
 
 	}
+
+
+	initializeTestArray(tempArray , totalPackets);
+
+	ct4=0;
+	for(int i=0 ; i < totalPackets ; i++){
+		if(sourcePortArray[i] != -1){
+			tempArray[ct4] = sourcePortArray[i];
+			ct4++;
+		}
+			for(int j =0 ; j< totalPackets ; j++){
+				if( tempArray[ct4]==sourcePortArray[j]){
+					sourcePortArray[j] = -1;
+				}
+			}
+
+	}
+	for(int i=0 ; i< totalPackets ; i++){
+		sourcePortArray[i] = tempArray[i];
+	}
+
+	for(int i=0 ; i< totalPackets ; i++ ){
+		cout << sourcePortArray[i] << " ";
+	}
+	cout << "\n\n";
+
+
 
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)iphdr[k].sourceIpAddr[0]  << "."  << (int)iphdr[k].sourceIpAddr[1] << "."
