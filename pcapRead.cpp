@@ -258,6 +258,75 @@ int destPortFromTcpHeader(wholePacket packet){
 	return x;
 }
 
+void sortPacketsAccordingToSourceIPAddress(){
+
+	for(int i=0 ; i< totalPackets -1; i++){
+		for(int j=0 ; j < totalPackets -i -1; j++){
+
+			if(IPHeaderSourceData(packet[j]) >  IPHeaderSourceData(packet[j+1]) ){
+				wholePacket temp = packet[j];
+				packet[j] = packet[j+1] ;
+				packet[j+1] = temp;
+			}
+		}
+    }
+
+}
+
+void sortPacketsAccordingToDestinationIPAddress(){
+
+	for(int i=0 ; i< totalPackets -1; i++){
+		for(int j=0 ; j < totalPackets -i -1; j++){
+			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
+				if(IPHeaderDestinationData(packet[j]) >  IPHeaderDestinationData(packet[j+1]) ){
+					wholePacket temp = packet[j];
+					packet[j] = packet[j+1] ;
+					packet[j+1] = temp;
+				}
+			}
+		}
+    }
+
+}
+
+void sortPacketsAccordingToSourcePort(){
+
+	for(int i=0 ; i< totalPackets -1; i++){
+		for(int j=0 ; j < totalPackets -i -1; j++){
+			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
+				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
+					if(sourcePortFromTcpHeader(packet[j]) >  sourcePortFromTcpHeader(packet[j+1])){
+						wholePacket temp = packet[j];
+						packet[j] = packet[j+1] ;
+						packet[j+1] = temp;
+					}
+				}
+			}
+		}
+    }
+
+}
+
+void sortPacketsAccordingToDestinationPort(){
+
+	 for(int i=0 ; i< totalPackets -1; i++){
+		for(int j=0 ; j < totalPackets -i -1; j++){
+			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
+				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
+					if(sourcePortFromTcpHeader(packet[j]) ==  sourcePortFromTcpHeader(packet[j+1])){
+						if(destPortFromTcpHeader(packet[j]) >  destPortFromTcpHeader(packet[j+1])){
+							wholePacket temp = packet[j];
+							packet[j] = packet[j+1] ;
+							packet[j+1] = temp;
+						}
+					}
+				}
+			}
+		}
+    }
+
+}
+
 void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 	unsigned char ch;
@@ -412,60 +481,14 @@ int main(){
     }
 
 */
-	//sortPacketsAccordingToSourceIPAddress();
+	sortPacketsAccordingToSourceIPAddress();
 
-    for(int i=0 ; i< totalPackets -1; i++){
-		for(int j=0 ; j < totalPackets -i -1; j++){
+	sortPacketsAccordingToDestinationIPAddress();
 
-			if(IPHeaderSourceData(packet[j]) >  IPHeaderSourceData(packet[j+1]) ){
-				wholePacket temp = packet[j];
-				packet[j] = packet[j+1] ;
-				packet[j+1] = temp;
-			}
-		}
-    }
+	sortPacketsAccordingToSourcePort();
 
-    for(int i=0 ; i< totalPackets -1; i++){
-		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) >  IPHeaderDestinationData(packet[j+1]) ){
-					wholePacket temp = packet[j];
-					packet[j] = packet[j+1] ;
-					packet[j+1] = temp;
-				}
-			}
-		}
-    }
+	sortPacketsAccordingToDestinationPort();
 
-	for(int i=0 ; i< totalPackets -1; i++){
-		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
-					if(sourcePortFromTcpHeader(packet[j]) >  sourcePortFromTcpHeader(packet[j+1])){
-						wholePacket temp = packet[j];
-						packet[j] = packet[j+1] ;
-						packet[j+1] = temp;
-					}
-				}
-			}
-		}
-    }
-
-    for(int i=0 ; i< totalPackets -1; i++){
-		for(int j=0 ; j < totalPackets -i -1; j++){
-			if(IPHeaderSourceData(packet[j]) == IPHeaderSourceData(packet[j+1])){
-				if(IPHeaderDestinationData(packet[j]) ==  IPHeaderDestinationData(packet[j+1]) ){
-					if(sourcePortFromTcpHeader(packet[j]) ==  sourcePortFromTcpHeader(packet[j+1])){
-						if(destPortFromTcpHeader(packet[j]) >  destPortFromTcpHeader(packet[j+1])){
-							wholePacket temp = packet[j];
-							packet[j] = packet[j+1] ;
-							packet[j+1] = temp;
-						}
-					}
-				}
-			}
-		}
-    }
 
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
