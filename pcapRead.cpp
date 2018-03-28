@@ -492,26 +492,50 @@ int main(){
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
 
+	fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , 1);
+
+	int ct=1;
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
 				if(packet[i].dataPayloadSize != 0){   // checks if data payload is empty or not
-					fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
+					//fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
 					//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
 					//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
 					//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
 
-					for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
-						ch = packet[i].data[j];
-						//printf("%.02x " , ch&(0xff));
-						if(isprint(ch)) {
-							fputc( ch ,dataSegment);
-						}
-						else {
-							if(ch == '\n' ) fputs("\n", dataSegment);
-							else fputs(".", dataSegment);
+					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
+						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
+						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
+						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+
+						ct++;
+						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
+					}
+
+					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr) ){
+						if(IPHeaderDestinationData(packet[i].iphdr.destIpAddr) == IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr) ){
+							if(sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) ==  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)){
+								if(destPortFromTcpHeader(packet[i].tcphdr.destPort) ==  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+
+									for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
+
+										ch = packet[i].data[j];
+										//printf("%.02x " , ch&(0xff));
+										if(isprint(ch)) {
+											fputc( ch ,dataSegment);
+										}
+										else {
+											if(ch == '\n' ) fputs("\n", dataSegment);
+											else fputs(".", dataSegment);
+										}
+									}
+								}
+
+							}
 						}
 					}
+
 				}
 			}
 		}
