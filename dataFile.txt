@@ -6067,6 +6067,10 @@ Content-Type: image/vnd.microsoft.icon.
 
 .
 
+----------DATA Payload for Packet No : 747  PayloadSize = 28  -----------
+
+............)....d..........
+
 ----------DATA Payload for Packet No : 748  PayloadSize = 84  -----------
 
 VS010.............../...........0.....&.r........z{.!!w....YS.0*..c..........bJ .&V.
