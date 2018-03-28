@@ -481,7 +481,6 @@ int main(){
 
 	sortPacketsAccordingToDestinationPort();
 
-
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
         << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
@@ -504,6 +503,19 @@ int main(){
 					//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
 					//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
 
+					for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
+
+						ch = packet[i].data[j];
+						//printf("%.02x " , ch&(0xff));
+						if(isprint(ch)) {
+							fputc( ch ,dataSegment);
+						}
+						else {
+							if(ch == '\n' ) fputs("\n", dataSegment);
+							else fputs(".", dataSegment);
+						}
+					}
+					if(i==totalPackets-1) break;
 					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
 						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
@@ -512,30 +524,6 @@ int main(){
 						ct++;
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
-
-					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr) ){
-						if(IPHeaderDestinationData(packet[i].iphdr.destIpAddr) == IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr) ){
-							if(sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) ==  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)){
-								if(destPortFromTcpHeader(packet[i].tcphdr.destPort) ==  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
-
-									for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
-
-										ch = packet[i].data[j];
-										//printf("%.02x " , ch&(0xff));
-										if(isprint(ch)) {
-											fputc( ch ,dataSegment);
-										}
-										else {
-											if(ch == '\n' ) fputs("\n", dataSegment);
-											else fputs(".", dataSegment);
-										}
-									}
-								}
-
-							}
-						}
-					}
-
 				}
 			}
 		}
