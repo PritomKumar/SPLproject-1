@@ -91,21 +91,13 @@ typedef struct wholePacket{
 	UDPHeader udphdr;
 	ARPHeader arphdr;
 	int dataPayloadSize;
-	unsigned char data[100000];
+	unsigned char data[2500];
 
 };
 
-wholePacket packet[10000];
-
-ethernetHeader ethhdr[10];
-IPHeader iphdr[10];
-TCPHeader tcphdr[10];
-UDPHeader udphdr[10];
-ARPHeader arphdr[10];
+wholePacket packet[5000];
 
 int totalPackets;
-unsigned char data[100][100];
-int dataPayloadSize[10000];
 
 void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
@@ -157,13 +149,13 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	fclose(output);
 }
 
-int dataSizeForIPHeader(wholePacket packet){
+int dataSizeForIPHeader(IPHeader iphdr){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = packet.iphdr.ipLength[i];
+		cc = iphdr.ipLength[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -403,7 +395,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("samplePcap.pcap","rb");
+	fp = fopen("alice.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -461,7 +453,7 @@ int main(){
 
     for(int i=0 ; i < totalPackets ; i++){
 
-        int len = dataSizeForIPHeader( packet[i] );
+        int len = dataSizeForIPHeader( packet[i].iphdr );
        // cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
         //cout <<"\n\nPacket no : " << i+1 << " and Packet payload : " <<  packet[i].dataPayloadSize <<endl <<endl;
 
@@ -481,15 +473,15 @@ int main(){
     }
 
 */
-	sortPacketsAccordingToSourceIPAddress();
+	//sortPacketsAccordingToSourceIPAddress();
 
-	sortPacketsAccordingToDestinationIPAddress();
+	//sortPacketsAccordingToDestinationIPAddress();
 
-	sortPacketsAccordingToSourcePort();
+	//sortPacketsAccordingToSourcePort();
 
-	sortPacketsAccordingToDestinationPort();
+	//sortPacketsAccordingToDestinationPort();
 
-
+/*
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
         << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
@@ -499,7 +491,7 @@ int main(){
         << " and Destination port : " <<  destPortFromTcpHeader(packet[k]) <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
-
+*/
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
