@@ -91,20 +91,20 @@ typedef struct wholePacket{
 	UDPHeader udphdr;
 	ARPHeader arphdr;
 	int dataPayloadSize;
-	unsigned char data[10000];
+	unsigned char data[100000];
 
 };
 
 wholePacket packet[10000];
 
-ethernetHeader ethhdr[10000];
-IPHeader iphdr[10000];
-TCPHeader tcphdr[10000];
-UDPHeader udphdr[10000];
-ARPHeader arphdr[10000];
+ethernetHeader ethhdr[10];
+IPHeader iphdr[10];
+TCPHeader tcphdr[10];
+UDPHeader udphdr[10];
+ARPHeader arphdr[10];
 
 int totalPackets;
-unsigned char data[10000][100000];
+unsigned char data[100][100];
 int dataPayloadSize[10000];
 
 int dataSize(packetHeader pachdr){
@@ -166,13 +166,13 @@ int IPHeaderDestinationData(IPHeader iphdr){
 	return x;
 }
 
-int dataSizeForIPHeader(IPHeader iphdr){
+int dataSizeForIPHeader(wholePacket packet){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = iphdr.ipLength[i];
+		cc = packet.iphdr.ipLength[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -272,7 +272,7 @@ void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 		//writeDataPayLoadInFile();
 
-		data[counter][ct] = ch;
+		packet[counter].data[ct] = ch;
 
 		if(isprint(ch)) {
 			fputc( ch ,segment);
@@ -292,11 +292,11 @@ void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 int readHeadersFromFile(int len,FILE *fp , int counter ){
 
-	ethernetHeader tempEthHdr;
-	IPHeader tempIPHdr;
-	TCPHeader tempTCPHdr;
-	UDPHeader tempUDPHdr;
-	ARPHeader tempARPHdr;
+	//ethernetHeader tempEthHdr;
+	//IPHeader tempIPHdr;
+	//TCPHeader tempTCPHdr;
+	//UDPHeader tempUDPHdr;
+	//ARPHeader tempARPHdr;
 
 
 	fread(&packet[counter].ethhdr , sizeof(struct ethernetHeader) , 1 , fp);  // Reading etherNet Header
@@ -307,25 +307,25 @@ int readHeadersFromFile(int len,FILE *fp , int counter ){
 	//cout << endl <<(int)ethhdr.ethType[1] <<endl;
 
 	if((int)packet[counter].ethhdr.ethType[1] == 0){    //check the ethernet type . 0 means IPV4 and 6 means ARP
-		fread(&iphdr[counter] , sizeof(struct IPHeader) , 1 , fp);
+		fread(&packet[counter].iphdr , sizeof(struct IPHeader) , 1 , fp);
 		len = len - sizeof(struct IPHeader);	   // subtracting IP header size
 												   // from length .
 		//cout << endl <<(int)iphdr.protocol <<endl;
 
-		if( (int)iphdr[counter].protocol == 6 ){	// Check protocol ; 6 means TCP , 17 Means UDP
-			fread(&tcphdr[counter] , sizeof(struct TCPHeader) , 1 , fp);
+		if( (int)packet[counter].iphdr.protocol == 6 ){	// Check protocol ; 6 means TCP , 17 Means UDP
+			fread(&packet[counter].tcphdr , sizeof(struct TCPHeader) , 1 , fp);
 			len = len - sizeof(struct TCPHeader);  // subtracting TCP header size
 												   // from length .
 		}
-		else if( (int)iphdr[counter].protocol == 17 ){
-			fread(&udphdr[counter] , sizeof(struct UDPHeader) , 1 , fp);
+		else if( (int)packet[counter].iphdr.protocol == 17 ){
+			fread(&packet[counter].udphdr , sizeof(struct UDPHeader) , 1 , fp);
 			len = len - sizeof(struct UDPHeader);  // subtracting UDP header size
 												   // from length .
 		}
 
 	}
-	else if((int)ethhdr[counter].ethType[1] == 6){			//check the ethernet type . 0 means IPV4 and 6 means ARP
-		fread(&arphdr[counter] , sizeof(struct ARPHeader) , 1 , fp);
+	else if((int)packet[counter].ethhdr.ethType[1] == 6){			//check the ethernet type . 0 means IPV4 and 6 means ARP
+		fread(&packet[counter].arphdr , sizeof(struct ARPHeader) , 1 , fp);
 		len = len - sizeof(struct ARPHeader);	   // subtracting  ARP header size
 												   // from length .
 	}
@@ -341,7 +341,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -379,7 +379,7 @@ int main(){
 
 			//cout <<"\n\nPacket no : " << counter << " and Packet size : " <<  len <<endl <<endl;
 			len = readHeadersFromFile(len , fp , counter);
-			dataPayloadSize[counter] = len;
+			packet[counter].dataPayloadSize = len;
 
 			//cout <<"\n\nPacket no : " << counter << " and Data Payload size : " <<  dataPayloadSize[counter] <<endl <<endl;
 
@@ -399,8 +399,8 @@ int main(){
 
     for(int i=0 ; i < totalPackets ; i++){
 
-        int len = dataSizeForIPHeader( iphdr[i] );
-       // cout <<"\n\nPacket no : " << i << " and Packet size : " <<  len <<endl <<endl;
+        int len = dataSizeForIPHeader( packet[i] );
+        cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
        // cout <<"\n\nPacket no : " << i << " and Packet payload : " <<  dataPayloadSize[i] <<endl <<endl;
 
     }
@@ -488,7 +488,7 @@ int main(){
 			}
 		}
     }
-
+/*
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)iphdr[k].sourceIpAddr[0]  << "."  << (int)iphdr[k].sourceIpAddr[1] << "."
         << (int)iphdr[k].sourceIpAddr[2] << "." <<  (int)iphdr[k].sourceIpAddr[3]<< " and Destination IP Address : " << (int)iphdr[k].destIpAddr[0] << "."
@@ -498,7 +498,7 @@ int main(){
         << " and Destination port : " <<  destPortFromTcpHeader(tcphdr[k]) <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
-
+*/
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)ethhdr[i].ethType[1] == 0){  //checking if its IP Header
 			if( (int)iphdr[i].protocol == 6 ) {   //checking if its TCP Header
