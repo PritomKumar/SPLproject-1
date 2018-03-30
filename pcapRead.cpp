@@ -236,19 +236,6 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 	return x;
 }
 
-int sequenceNumber(unsigned char *sequenceNumber){
-
-	unsigned char cc;
-    int x = 0;
-
-	for(int i=0 ; i<2 ; i++){
-		cc = sequenceNumber[i];
-		x = x<<8;
-		x = x | cc;
-
-	}
-	return x;
-}
 
 int destPortFromTcpHeader(unsigned char *destPort){
 
@@ -257,6 +244,19 @@ int destPortFromTcpHeader(unsigned char *destPort){
 
 	for(int i=0 ; i<2 ; i++){
 		cc = destPort[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+int sequenceNumber(unsigned char *sequenceNumber){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<4 ; i++){
+		cc = sequenceNumber[i];
 		x = x<<8;
 		x = x | cc;
 
@@ -324,6 +324,28 @@ void sortPacketsAccordingToDestinationPort(){
 							wholePacket temp = packet[j];
 							packet[j] = packet[j+1] ;
 							packet[j+1] = temp;
+						}
+					}
+				}
+			}
+		}
+    }
+
+}
+
+void sortPacketsAccordingToSequenceNumber(){
+
+	 for(int i=0 ; i< totalPackets -1; i++){
+		for(int j=0 ; j < totalPackets -i -1; j++){
+			if(IPHeaderSourceData(packet[j].iphdr.sourceIpAddr) ==  IPHeaderSourceData(packet[j+1].iphdr.sourceIpAddr) ){
+				if(IPHeaderDestinationData(packet[j].iphdr.destIpAddr) == IPHeaderDestinationData(packet[j+1].iphdr.destIpAddr) ){
+					if(sourcePortFromTcpHeader(packet[j].tcphdr.sourcePort) ==  sourcePortFromTcpHeader(packet[j+1].tcphdr.sourcePort)){
+						if(destPortFromTcpHeader(packet[j].tcphdr.destPort) ==  destPortFromTcpHeader(packet[j+1].tcphdr.destPort)){
+							if(sequenceNumber(packet[j].tcphdr.sequenceNumber) >  sequenceNumber(packet[j+1].tcphdr.sequenceNumber)){
+								wholePacket temp = packet[j];
+								packet[j] = packet[j+1] ;
+								packet[j+1] = temp;
+							}
 						}
 					}
 				}
