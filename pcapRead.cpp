@@ -236,6 +236,20 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 	return x;
 }
 
+int sourcePortFromTcpHeader(unsigned char *sourcePort){
+
+	unsigned char cc;
+    int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = sourcePort[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
 int destPortFromTcpHeader(unsigned char *destPort){
 
 	unsigned char cc;
