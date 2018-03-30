@@ -236,7 +236,7 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 	return x;
 }
 
-int sourcePortFromTcpHeader(unsigned char *sourcePort){
+int sequenceNumber(unsigned char *sourcePort){
 
 	unsigned char cc;
     int x = 0;
