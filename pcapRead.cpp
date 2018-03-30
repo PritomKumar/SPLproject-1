@@ -194,10 +194,10 @@ void printfDataArray(int counter){
     }
 }
 
-int IPHeaderSourceData(unsigned char *sourceIpAddr){
+unsigned long int IPHeaderSourceData(unsigned char *sourceIpAddr){
 
 	unsigned char cc;
-    int x = 0;
+    unsigned long int x = 0;
 
 	for(int i=0 ; i<3 ; i++){
 		cc = sourceIpAddr[i];
@@ -208,10 +208,10 @@ int IPHeaderSourceData(unsigned char *sourceIpAddr){
 	return x;
 }
 
-int IPHeaderDestinationData(unsigned char *destIpAddr){
+unsigned long int IPHeaderDestinationData(unsigned char *destIpAddr){
 
 	unsigned char cc;
-    int x = 0;
+    unsigned long int x = 0;
 
 	for(int i=0 ; i<3 ; i++){
 		cc = destIpAddr[i];
@@ -240,7 +240,7 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 int destPortFromTcpHeader(unsigned char *destPort){
 
 	unsigned char cc;
-    int x = 0;
+    unsigned long int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
 		cc = destPort[i];
@@ -250,7 +250,7 @@ int destPortFromTcpHeader(unsigned char *destPort){
 	}
 	return x;
 }
-int sequenceNumber(unsigned char *sequenceNumber){
+unsigned long int sequenceNumber(unsigned char *sequenceNumber){
 
 	unsigned char cc;
     int x = 0;
@@ -431,7 +431,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -517,6 +517,8 @@ int main(){
 
 	sortPacketsAccordingToDestinationPort();
 
+	sortPacketsAccordingToSequenceNumber();
+
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
         << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
@@ -524,6 +526,7 @@ int main(){
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
         cout <<"\nPacket no : " << k+1 << " and Source port : " <<  sourcePortFromTcpHeader(packet[k].tcphdr.sourcePort)
         << " and Destination port : " <<  destPortFromTcpHeader(packet[k].tcphdr.destPort) <<endl;
+        cout <<"\nPacket no : " << k+1 << " and Sequence Number : " <<  sequenceNumber(packet[k].tcphdr.sequenceNumber) <<endl ;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
 
