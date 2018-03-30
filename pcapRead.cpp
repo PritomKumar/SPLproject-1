@@ -236,13 +236,13 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 	return x;
 }
 
-int sequenceNumber(unsigned char *sourcePort){
+int sequenceNumber(unsigned char *sequenceNumber){
 
 	unsigned char cc;
     int x = 0;
 
 	for(int i=0 ; i<2 ; i++){
-		cc = sourcePort[i];
+		cc = sequenceNumber[i];
 		x = x<<8;
 		x = x | cc;
 
