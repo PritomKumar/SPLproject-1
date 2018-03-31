@@ -236,7 +236,6 @@ int sourcePortFromTcpHeader(unsigned char *sourcePort){
 	return x;
 }
 
-
 int destPortFromTcpHeader(unsigned char *destPort){
 
 	unsigned char cc;
@@ -250,6 +249,7 @@ int destPortFromTcpHeader(unsigned char *destPort){
 	}
 	return x;
 }
+
 unsigned long int sequenceNumber(unsigned char *sequenceNumber){
 
 	unsigned char cc;
@@ -431,7 +431,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -509,6 +509,7 @@ int main(){
     }
 
 */
+
 	sortPacketsAccordingToSourceIPAddress();
 
 	sortPacketsAccordingToDestinationIPAddress();
@@ -534,9 +535,11 @@ int main(){
 
 	int ct=1;
 	for(int i=0 ; i< totalPackets ; i++){
+		unsigned long int sqNumber = sequenceNumber(packet[i].tcphdr.sequenceNumber);
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
 				if(packet[i].dataPayloadSize != 0){   // checks if data payload is empty or not
+					if(sqNumber + packet[i].dataPayloadSize == sequenceNumber(packet[i+1].tcphdr.sequenceNumber){
 					//fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
 					//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
 					//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
@@ -562,6 +565,7 @@ int main(){
 
 						ct++;
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
+					}
 					}
 				}
 			}
