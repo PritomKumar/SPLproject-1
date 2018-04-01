@@ -519,7 +519,7 @@ int main(){
 	sortPacketsAccordingToDestinationPort();
 
 	sortPacketsAccordingToSequenceNumber();
-
+/*
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
         << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
@@ -530,7 +530,7 @@ int main(){
         cout <<"\nPacket no : " << k+1 << " and Sequence Number : " <<  sequenceNumber(packet[k].tcphdr.sequenceNumber) <<endl ;
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
-
+*/
 	fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , 1);
 
 	int ct=1;
@@ -557,15 +557,16 @@ int main(){
 								else fputs(".", dataSegment);
 							}
 						}
-						if(i==totalPackets-1) break;
-						if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
-							|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
-							|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
-							|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
 
-							ct++;
-							fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
-						}
+					}
+					if(i==totalPackets-1) break;
+					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
+						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
+						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
+						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+
+						ct++;
+						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
 				}
 			}
