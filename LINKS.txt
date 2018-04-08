@@ -47,3 +47,7 @@ port******
 5.http://www.pearsonitcertification.com/articles/article.aspx?p=1868080
 6.https://www.webopedia.com/quick_ref/portnumbers.asp
 7.https://docs.oracle.com/javase/tutorial/networking/sockets/definition.html
+
+Socket****
+
+1.https://www.tutorialspoint.com/unix_sockets/what_is_socket.htm
