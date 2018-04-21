@@ -98,6 +98,7 @@ typedef struct wholePacket{
 wholePacket packet[10000];
 
 int totalPackets;
+int totalInstances;
 
 void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
@@ -355,6 +356,28 @@ void sortPacketsAccordingToSequenceNumber(){
 
 }
 
+int checkSeparateFilePackets(){
+
+	int ct=0;
+	for(int i=0 ; i< totalPackets ; i++){
+		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
+			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
+				if(packet[i].dataPayloadSize != 0){
+					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
+						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
+						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
+						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+
+						ct++;
+					}
+				}
+			}
+		}
+	}
+	return ct;
+
+}
+
 void printAllDataPayload(int counter, int len ,FILE *fp , FILE *segment){
 
 	unsigned char ch;
@@ -519,6 +542,10 @@ int main(){
 	sortPacketsAccordingToDestinationPort();
 
 	sortPacketsAccordingToSequenceNumber();
+
+	int instanceCounter = checkSeparateFilePackets();
+
+	printf( "\n\nTotal Separate Files in this PCAP file is %d . \n\n" , instanceCounter);
 /*
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
