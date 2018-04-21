@@ -1,4 +1,5 @@
 #include<iostream>
+#include<string>
 #include<stdio.h>
 
 using namespace std;
@@ -358,7 +359,7 @@ void sortPacketsAccordingToSequenceNumber(){
 
 int checkSeparateFilePackets(){
 
-	int ct=0;
+	int ct=1;
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
@@ -454,7 +455,7 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 
-	fp = fopen("alice.pcap","rb");
+	fp = fopen("samplePcap.pcap","rb");
 	/*
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
@@ -521,7 +522,7 @@ int main(){
 	//printfDataArray(counter);
 
 	FILE *dataSegment;
-	dataSegment = fopen("dataFile.txt" , "w");
+	//dataSegment = fopen("dataFile.txt" , "w");
 /*
     for(int i=0 ; i< totalPackets ; i++){
         cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
@@ -546,6 +547,28 @@ int main(){
 	int instanceCounter = checkSeparateFilePackets();
 
 	printf( "\n\nTotal Separate Files in this PCAP file is %d . \n\n" , instanceCounter);
+
+	printf("\nEnter File name you want to create . \n");
+
+	char fileName[instanceCounter][200];
+
+	for(int i=0 ; i< instanceCounter ; i++){
+
+		char s[200];
+		char txtEntension[]=".txt";
+
+		scanf("%s" , &s);
+		strcat(file , txtEntension);
+
+		fileName[i] = s;
+
+	}
+
+	for(int i=0 ; i< instanceCounter ; i++){
+		cout << fileName[i] << "\t" ;
+	}
+
+
 /*
     for(int k = 0 ; k< totalPackets ; k++){
         cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "."
@@ -591,7 +614,9 @@ int main(){
 						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
 						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+						string temp = fileName[ct-1];
 
+						dataSegment = fopen( temp , "a+");
 						ct++;
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
