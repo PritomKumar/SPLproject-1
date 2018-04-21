@@ -550,26 +550,20 @@ int main(){
 
 	printf("\nEnter File name you want to create . \n");
 
-	char fileName[instanceCounter][200];
+	string fileName[instanceCounter];
 
 	for(int i=0 ; i< instanceCounter ; i++){
-		char s[200] ;
-		char txtEntension[]=".txt";
-		for(int j=0 ; j < 200 ; j++){
-			char ch;
-			scanf("%c" , &ch);
-			s[j] = ch;
-			fileName[i][j] = ch;
-			if(ch == ' ' || ch == '\n'){
-				strcat(fileName[i] , txtEntension);
-			 	break;
-			}
-		}
+		string s;
+		string txtExtension= ".txt";
+		cin >> s;
+		s += txtExtension;
+
+		fileName[i] = s;
 	}
 
 	for(int i=0 ; i< instanceCounter ; i++){
 
-		 printf("%s\n" , fileName[i][]);
+		 cout << fileName[i]  << "   " ;
 	}
 
 
@@ -585,6 +579,16 @@ int main(){
         //cout <<"\n\nPacket no : " << k+1 << " and Source port : " <<  sourceIPAdressDataArray[k] <<endl <<endl;
     }
 */
+
+	char file[200];
+	for(int j =0 ; j<fileName[0].length() ; j++ ){
+
+		if(fileName[0][j] == '\0') break;
+		file[j] = fileName[0][j];
+	}
+
+	dataSegment = fopen( file , "w+");
+
 	fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , 1);
 
 	int ct=1;
@@ -598,6 +602,8 @@ int main(){
 						//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
 						//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
 						//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
+
+
 
 						for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
 
@@ -618,9 +624,17 @@ int main(){
 						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
 						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
-						//string temp = fileName[ct-1];
 
-						//dataSegment = fopen( temp , "a+");
+						cout << "paisi  ct = " << ct  << "\n\n";
+
+						char file[200];
+						for(int j =0 ; j<fileName[ct].length() ; j++ ){
+
+							if(fileName[ct][j] == '\0') break;
+							file[j] = fileName[ct][j];
+						}
+
+						dataSegment = fopen( file , "w+");
 						ct++;
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
@@ -628,6 +642,7 @@ int main(){
 			}
 		}
 	}
+	cout << "paisi  ct = " << ct  << "\n\n";
     //cout << "\n\nTotal packets = " << totalPackets <<endl;
 	fclose(dataSegment);
 
