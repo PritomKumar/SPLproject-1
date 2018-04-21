@@ -1,5 +1,5 @@
 #include<iostream>
-#include<string>
+#include<string.h>
 #include<stdio.h>
 
 using namespace std;
@@ -553,19 +553,23 @@ int main(){
 	char fileName[instanceCounter][200];
 
 	for(int i=0 ; i< instanceCounter ; i++){
-
-		char s[200];
+		char s[200] ;
 		char txtEntension[]=".txt";
-
-		scanf("%s" , &s);
-		strcat(file , txtEntension);
-
-		fileName[i] = s;
-
+		for(int j=0 ; j < 200 ; j++){
+			char ch;
+			scanf("%c" , &ch);
+			s[j] = ch;
+			fileName[i][j] = ch;
+			if(ch == ' ' || ch == '\n'){
+				strcat(fileName[i] , txtEntension);
+			 	break;
+			}
+		}
 	}
 
 	for(int i=0 ; i< instanceCounter ; i++){
-		cout << fileName[i] << "\t" ;
+
+		 printf("%s\n" , fileName[i][]);
 	}
 
 
@@ -614,9 +618,9 @@ int main(){
 						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
 						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
-						string temp = fileName[ct-1];
+						//string temp = fileName[ct-1];
 
-						dataSegment = fopen( temp , "a+");
+						//dataSegment = fopen( temp , "a+");
 						ct++;
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
