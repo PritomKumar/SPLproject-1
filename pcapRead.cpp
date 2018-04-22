@@ -456,12 +456,12 @@ int main(){
 	int choice =0;
 
 	fp = fopen("samplePcap.pcap","rb");
-	/*
+
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
 	cout << "Choice 2 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
 	cout << "\t   Additionally read and count the packet numbers . " <<endl;
-	*/
+
 	cout << "Enter your choice :  " ;
 
 	cin >> choice;
@@ -548,11 +548,12 @@ int main(){
 
 	printf( "\n\nTotal Separate Files in this PCAP file is %d . \n\n" , instanceCounter);
 
-	printf("\nEnter File name you want to create . \n");
+	//printf("\nEnter File name you want to create . \n");
 
 	string fileName[instanceCounter];
 
 	for(int i=0 ; i< instanceCounter ; i++){
+		printf("\nEnter File name for FILE NO : %d \n" , i+1);
 		string s;
 		string txtExtension= ".txt";
 		cin >> s;
@@ -581,11 +582,16 @@ int main(){
 */
 
 	char file[200];
-	for(int j =0 ; j<fileName[0].length() ; j++ ){
+	for(int j =0 ; j<=fileName[0].length() ; j++ ){
 
-		if(fileName[0][j] == '\0') break;
 		file[j] = fileName[0][j];
+		if(fileName[0][j] == '\0') break;
 	}
+	cout <<endl<<endl;
+	for(int j =0 ; j<fileName[0].length() ; j++ ){
+		printf("%c" , file[j]);
+	}
+	cout <<endl<<endl;
 
 	dataSegment = fopen( file , "w+");
 
@@ -604,7 +610,6 @@ int main(){
 						//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
 
 
-
 						for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
 
 							ch = packet[i].data[j];
@@ -617,32 +622,39 @@ int main(){
 								else fputs(".", dataSegment);
 							}
 						}
+						fclose(dataSegment);
 
 					}
 					if(i==totalPackets-1) break; //total
-					if(IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
+					if((IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
 						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
-						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
+						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)) && packet[i].dataPayloadSize != 0){
 
-						cout << "paisi  ct = " << ct  << "\n\n";
 
+						//cout << "paisi  ct = " << ct  << "\n\n";
 						char file[200];
-						for(int j =0 ; j<fileName[ct].length() ; j++ ){
+						for(int j =0 ; j<=fileName[ct].length() ; j++ ){
 
-							if(fileName[ct][j] == '\0') break;
 							file[j] = fileName[ct][j];
+							if(fileName[ct][j] == '\0') break;
 						}
+
+						for(int j =0 ; j<=fileName[ct].length() ; j++ ){
+							printf("%c" , file[j]);
+						}
+						cout <<endl<<endl;
 
 						dataSegment = fopen( file , "w+");
 						ct++;
+
 						fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , ct);
 					}
 				}
 			}
 		}
 	}
-	cout << "paisi  ct = " << ct  << "\n\n";
+	//cout << "paisi  ct = " << ct  << "\n\n";
     //cout << "\n\nTotal packets = " << totalPackets <<endl;
 	fclose(dataSegment);
 
