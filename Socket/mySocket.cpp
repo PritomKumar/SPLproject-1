@@ -22,21 +22,21 @@ using namespace std;
 #endif ///converting host byte order..
 
 
-void addPacketHeaderInFile(int data_size , FILE *iFile){
+void addPacketHeaderInFile(int data_size , FILE *packetCapture){
     
     unsigned long int epochTime = 1520144305;
     unsigned long int captureTime = 479050000;
     unsigned long int packetSize = data_size;
     unsigned long int packetLength = data_size;    
     
-    fwrite(&epochTime,4,1,iFile);
-    fwrite(&captureTime,4,1,iFile);
-    fwrite(&packetSize,4,1,iFile);
-    fwrite(&packetLength,4,1,iFile);
+    fwrite(&epochTime,4,1,packetCapture);
+    fwrite(&captureTime,4,1,packetCapture);
+    fwrite(&packetSize,4,1,packetCapture);
+    fwrite(&packetLength,4,1,packetCapture);
 }
 
 
-void addPcapGlobalHeaderInFile(FILE *iFile){
+void addPcapGlobalHeaderInFile(FILE *packetCapture){
    
     unsigned long int magicNumber = 2712847316; 
     unsigned short int majorVersion = 2;
@@ -46,13 +46,13 @@ void addPcapGlobalHeaderInFile(FILE *iFile){
     unsigned long int lengthOfCapturePackets = 65535;
     unsigned long int linkLayerHedrType = 1;
         
-    fwrite(&magicNumber,4,1,iFile);
-    fwrite(&majorVersion,2,1,iFile);
-    fwrite(&minorVersion,2,1,iFile);
-    fwrite(&timezone,4,1,iFile);
-    fwrite(&sigfigs,4,1,iFile);
-    fwrite(&lengthOfCapturePackets,4,1,iFile);
-    fwrite(&linkLayerHedrType,4,1,iFile);
+    fwrite(&magicNumber,4,1,packetCapture);
+    fwrite(&majorVersion,2,1,packetCapture);
+    fwrite(&minorVersion,2,1,packetCapture);
+    fwrite(&timezone,4,1,packetCapture);
+    fwrite(&sigfigs,4,1,packetCapture);
+    fwrite(&lengthOfCapturePackets,4,1,packetCapture);
+    fwrite(&linkLayerHedrType,4,1,packetCapture);
         
 }
 
@@ -86,9 +86,46 @@ bool checkIPVersionAndProtocol(unsigned char *bufferArray){
 	else return false;
 }
 
+int hexadecimalToInteger(unsigned char *array){
+
+	unsigned char cc;
+    unsigned long int x = 0;
+
+	for(int i=0 ; i<2 ; i++){
+		cc = array[i];
+		x = x<<8;
+		x = x | cc;
+
+	}
+	return x;
+}
+
+void printReleventInformation(unsigned char *bufferArray){
+
+	printf("\n\nPrinting Relevent Information ----------------------- \n\n");
+		   		
+    printf("Source IP Address : %d.%d.%d.%d\n",(int)bufferArray[26] , (int)bufferArray[27] , (int)bufferArray[28] , (int)bufferArray[29]  );
+	printf("Destination IP Address : %d.%d.%d.%d\n",(int)bufferArray[30] , (int)bufferArray[31] , (int)bufferArray[32] , (int)bufferArray[33]  );
+		   
+	unsigned long int sourcePort = 0;	    
+	for(int i = 34 ; i < 36 ; i++){
+		sourcePort = sourcePort<<8;
+		sourcePort = sourcePort | bufferArray[i];
+	}		
+	printf("Source Port : %ld\n" , sourcePort);
+			
+    unsigned long int destinationPort = 0;    
+    for(int i = 36 ; i < 38 ; i++){
+		destinationPort = destinationPort<<8;
+		destinationPort = destinationPort | bufferArray[i];
+	}
+	printf("Destination Port : %ld\n" , destinationPort);
+
+}
+
 void packetCapture(){
 
-	FILE *iFile;
+	FILE *packetCapture;
 	int sockRaw;
 	
 	sockRaw=socket(AF_PACKET,SOCK_RAW,htons(ETH_P_ALL));
@@ -98,14 +135,29 @@ void packetCapture(){
 		printf("Error in creating socket\n");
 		exit(0);
 	}
-
-	iFile=fopen("a.pcap","wb");
-	addPcapGlobalHeaderInFile(iFile);
+	printf("Enter a name for pcap file to save TCP data . \n");
+	string s;
+	cin >> s;
+	
+	s+= ".pcap";
+	char pcapName[100];
+	
+	scanf("%s", &pcapName);
+	
+	
+	
+	for(int i=0 ; i <=s.length() ; i++){
+	
+		pcapName[i] = s[i];
+	}
+	
+	packetCapture=fopen( "k.pcap" ,"wb");
+	addPcapGlobalHeaderInFile(packetCapture);
 
 	unsigned char bufferArray[100000];
 	
 	int counter = 0;
-	printf("Enter the number of Packets You want to capture . \n");
+	printf("Enter the number of Packets You want to capture :  \n");
 	cin >> counter ;
 	
 	struct sockaddr saddr;
@@ -126,7 +178,7 @@ void packetCapture(){
 		//if(checkIPVersionAndProtocol(bufferArray)){
 		if( bufferArray[13] == 0 && bufferArray[23] == 6){ // Checking if its tcp Packet	
 			i++;
-			printf("\n\nSocket reading for Packet %d ----- packet size %d\n" ,i ,dataSize );
+			printf("\n\nSocket reading for Packet %d ----- Packet size =  %d\n" ,i ,dataSize );
 
 			for(int j=0;j<dataSize;j++){
 		         if (j%16 == 0)
@@ -138,25 +190,21 @@ void packetCapture(){
 				  printf(" ");
 		        printf("%.02X ", bufferArray[j]);
 		    }
+		   // printf("\nProtocol Type == %d\n\n" , bufferArray[23]);
 		    
-		   
-		   printf("\n\nProtocol Type == %d\n\n" , bufferArray[23]);
+		    printReleventInformation(bufferArray);
 		   //	printf("\n\nProtocol Type : ");
-		   
 		   	//checkIPVersion(bufferArray);
+			//fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,packetCapture);
 		
-						 
-			//fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,iFile);
-		
-			addPacketHeaderInFile(dataSize , iFile);
+			addPacketHeaderInFile(dataSize , packetCapture);
 
-			fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,iFile);	
+			fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,packetCapture);	
 
 		}
 	}
 	
 	printf("\n\n");
-
 
 }
 
@@ -166,4 +214,3 @@ int main(){
 
 	
 }
-
