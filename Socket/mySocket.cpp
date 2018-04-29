@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include <sys/socket.h>
+#include <string.h>
 //#include <sys/types.h>
 #include <stdio.h> 
 #include <stdlib.h> //for exit(0);
@@ -130,31 +131,21 @@ void packetCapture(){
 	
 	sockRaw=socket(AF_PACKET,SOCK_RAW,htons(ETH_P_ALL));
 	//sockRaw=socket(AF_INET,SOCK_STREAM, 0 );
-	if(sockRaw<0)
-	{
+	if(sockRaw<0){
+	
 		printf("Error in creating socket\n");
 		exit(0);
 	}
 	printf("Enter a name for pcap file to save TCP data . \n");
-	string s;
-	cin >> s;
+
+	char pcapName[100];	
+	scanf("%s", pcapName);
+	strcat (pcapName , ".pcap");
 	
-	s+= ".pcap";
-	char pcapName[100];
-	
-	scanf("%s", &pcapName);
-	
-	
-	
-	for(int i=0 ; i <=s.length() ; i++){
-	
-		pcapName[i] = s[i];
-	}
-	
-	packetCapture=fopen( "k.pcap" ,"wb");
+	packetCapture=fopen( pcapName ,"wb");
 	addPcapGlobalHeaderInFile(packetCapture);
 
-	unsigned char bufferArray[100000];
+	unsigned char bufferArray[10000];
 	
 	int counter = 0;
 	printf("Enter the number of Packets You want to capture :  \n");
