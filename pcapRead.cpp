@@ -494,7 +494,7 @@ int main(){
 	int choice =0;
 	int counter=0;
 
-	cout << "Enter a existing pcap filename .(Have to be a pcap file). " << endl;
+	cout << "Enter a existing pcap filename to examine .(Have to be a pcap file). " << endl << endl;
 	string s;
 	string pcapExtension= ".pcap";
 	cin >> s;
