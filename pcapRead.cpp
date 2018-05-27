@@ -1,6 +1,7 @@
 #include<iostream>
 #include<string.h>
 #include<stdio.h>
+#include "packetCapture.cpp"
 
 using namespace std;
 
@@ -92,11 +93,21 @@ typedef struct wholePacket{
 	UDPHeader udphdr;
 	ARPHeader arphdr;
 	int dataPayloadSize;
-	unsigned char data[10000];
+	unsigned char data[20000];
 
 };
 
-wholePacket packet[10000];
+wholePacket packet[5000];
+
+struct impCollection{
+
+	unsigned long int sourceIPData ;
+	unsigned long int destIPData ;
+	unsigned long int sourcePortData ;
+	unsigned long int destPortData ;
+};
+
+impCollection notable[100];
 
 int totalPackets;
 int totalInstances;
@@ -357,9 +368,21 @@ void sortPacketsAccordingToSequenceNumber(){
 
 }
 
+void printNotable(int impCollectionCounter){
+
+	for(int i=0 ; i < impCollectionCounter ; i++){
+		printf("\nFor Notable %d : \n" , i+1);
+		printf("Source Port = %lu\n" , notable[i].sourcePortData);
+		printf("Destination Port = %lu\n" , notable[i].destPortData);
+	}
+
+}
 int checkSeparateFilePackets(){
 
-	int ct=1;
+	int insCounter=1;
+	int impCollectionCounter = 1;
+	int tempCounter = 0;
+	//int ct = 0 ;
 	for(int i=0 ; i< totalPackets ; i++){
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
@@ -369,13 +392,26 @@ int checkSeparateFilePackets(){
 						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
 						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)){
 
-						ct++;
+						insCounter++;
+						tempCounter = 0;
+					}
+					else {
+						tempCounter++;
+						if(tempCounter == 10){
+							notable[impCollectionCounter-1].sourceIPData = IPHeaderSourceData(packet[i].iphdr.sourceIpAddr);
+							notable[impCollectionCounter-1].destIPData = IPHeaderDestinationData(packet[i].iphdr.destIpAddr);
+							notable[impCollectionCounter-1].sourcePortData = sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort);
+							notable[impCollectionCounter-1].destPortData = destPortFromTcpHeader(packet[i].tcphdr.destPort);
+							impCollectionCounter++;
+						}
 					}
 				}
 			}
 		}
 	}
-	return ct;
+	//printNotable(impCollectionCounter);
+	printf("\nThere are %d connections in the pcapdatafile.\nOf which %d are important and noticeable.\n\n" , insCounter , impCollectionCounter);
+	return impCollectionCounter;
 
 }
 
@@ -493,22 +529,8 @@ int main(){
 	unsigned char str[16];
 	int choice =0;
 	int counter=0;
-
-	cout << "Enter a existing pcap filename to examine .(Have to be a pcap file). " << endl << endl;
-	string s;
-	string pcapExtension= ".pcap";
-	cin >> s;
-	s += pcapExtension;
-
-	char file[200];
-	for(int j =0 ; j<=s.length() ; j++ ){
-
-		file[j] = s[j];
-		if(s[j] == '\0') break;
-	}
-
-	fp = fopen(file,"rb");
 /*
+
 	cout << "What do you want to do ?" <<endl;
 	cout << "Choice 1 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
 	cout << "Choice 2 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
@@ -519,10 +541,10 @@ int main(){
 
 	cin >> choice;
 
+	if(choice == 0) packetCapture();
 
 	//if(choice == 1) readAndWriteFullPcapDataAsCharacterAndInteger( fp );
 */
-
 /*
 	else if (choice == 2) {
 
@@ -564,6 +586,24 @@ int main(){
 
     }
 */
+
+	cout << "Enter a existing pcap filename to examine .(Have to be a pcap file). " << endl << endl;
+	string s;
+	string pcapExtension= ".pcap";
+	cin >> s;
+	s += pcapExtension;
+
+	char file[200];
+	for(int j =0 ;  ; j++ ){
+
+		file[j] = s[j];
+		if(s[j] == '\0'){
+			 file[j] = '\0';
+			 break;
+		}
+	}
+
+	fp = fopen(file,"rb");
 
 	pcapGlobalHeader globhdr;
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
@@ -647,10 +687,13 @@ int main(){
 
 
 	char nameFile[200];
-	for(int j =0 ; j<=fileName[0].length() ; j++ ){
+	for(int j =0 ;  ; j++ ){
 
 		nameFile[j] = fileName[0][j];
-		if(fileName[0][j] == '\0') break;
+		if(fileName[0][j] == '\0') {
+			nameFile[j] = '\0';
+			break;
+		}
 	}
 	cout <<endl<<endl;
 	for(int j =0 ; j<fileName[0].length() ; j++ ){
@@ -661,14 +704,15 @@ int main(){
 	dataSegment = fopen( nameFile , "w+");
 
 	fprintf(dataSegment , "\n\n-----------Collected Full Data File : %d -----\n\n" , 1);
+	cout << "paisi\n\n" ; 
 
 	int ct=1;
 	for(int i=0 ; i< totalPackets ; i++){
-		unsigned long int sqNumber = sequenceNumber(packet[i].tcphdr.sequenceNumber);
+		//unsigned long int sqNumber = sequenceNumber(packet[i].tcphdr.sequenceNumber);
 		if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
 			if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
 				if(packet[i].dataPayloadSize != 0){   // checks if data payload is empty or not
-					if(sqNumber + packet[i].dataPayloadSize == sequenceNumber(packet[i+1].tcphdr.sequenceNumber)){ // check if the next sequence is valid
+					//if(sqNumber + packet[i].dataPayloadSize == sequenceNumber(packet[i+1].tcphdr.sequenceNumber)){ // check if the next sequence is valid
 						//fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
 						//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
 						//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
@@ -686,22 +730,25 @@ int main(){
 								else fputs(".", dataSegment);
 							}
 						}
-						fclose(dataSegment);
 
-					}
+					//}
 					if(i==totalPackets-1) break; //total
-					if((IPHeaderSourceData(packet[i].iphdr.sourceIpAddr) !=  IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr)
-						|| IPHeaderDestinationData(packet[i].iphdr.destIpAddr) != IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr)
-						|| sourcePortFromTcpHeader(packet[i].tcphdr.sourcePort) !=  sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort)
-						|| destPortFromTcpHeader(packet[i].tcphdr.destPort) !=  destPortFromTcpHeader(packet[i+1].tcphdr.destPort)) && packet[i].dataPayloadSize != 0){
+					if(IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr) ==  notable[ct-1].sourceIPData
+						&& IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr) == notable[ct-1].destIPData
+						&& sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort) ==  notable[ct-1].sourcePortData
+						&& destPortFromTcpHeader(packet[i+1].tcphdr.destPort) ==  notable[ct-1].destPortData ){
 
 
-						//cout << "paisi  ct = " << ct  << "\n\n";
+						fclose(dataSegment);
+						cout << "paisi  ct = " << ct  << "\n\n";
 						char file[200];
-						for(int j =0 ; j<=fileName[ct].length() ; j++ ){
+						for(int j =0 ;  ; j++ ){
 
 							file[j] = fileName[ct][j];
-							if(fileName[ct][j] == '\0') break;
+							if(fileName[ct][j] == '\0') {
+								file[j] = '\0';
+								break;
+							}
 						}
 
 						for(int j =0 ; j<=fileName[ct].length() ; j++ ){
