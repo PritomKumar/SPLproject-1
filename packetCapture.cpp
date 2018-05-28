@@ -170,7 +170,7 @@ void packetCapture(){
 		if( bufferArray[13] == 0 && bufferArray[23] == 6){ // Checking if its tcp Packet	
 			i++;
 			printf("\n\nSocket reading for Packet %d ----- Packet size =  %d\n" ,i ,dataSize );
-
+/*
 			for(int j=0;j<dataSize;j++){
 		         if (j%16 == 0)
 				   printf("\n");
@@ -181,6 +181,7 @@ void packetCapture(){
 				  printf(" ");
 		        printf("%.02X ", bufferArray[j]);
 		    }
+		    */
 		   // printf("\nProtocol Type == %d\n\n" , bufferArray[23]);
 		    
 		    printReleventInformation(bufferArray);
