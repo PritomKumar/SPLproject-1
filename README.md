@@ -39,7 +39,7 @@ Here is the user manual.
        like 'WireShark', 'TShark' and so on.  
 									
     2. It can give the whole conversation between client and server and create text file for HTTP connection. 
-    3. It can used as a security check for network connection .  
+    3. It can be used as a security check for network connection .  
 
 
 # Code properties:
