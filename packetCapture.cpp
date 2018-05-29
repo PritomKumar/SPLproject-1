@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 #include <sys/socket.h>
 #include <string.h>
-//#include <sys/types.h>
 #include <stdio.h> 
 #include <stdlib.h> //for exit(0);
+//#include <sys/types.h>
 //#include <errno.h> //For errno - the error number
 //#include <linux/types.h> 
 //#include <netinet/tcp.h>   //Provides declarations for tcp header
@@ -143,6 +143,7 @@ void packetCapture(){
 	strcat (pcapName , ".pcap");
 	
 	packetCapture=fopen( pcapName ,"wb");
+	
 	addPcapGlobalHeaderInFile(packetCapture);
 
 	unsigned char bufferArray[10000];
@@ -167,6 +168,8 @@ void packetCapture(){
 		}	
 		
 		//if(checkIPVersionAndProtocol(bufferArray)){
+		//if( bufferArray[13] != 0 || bufferArray[23] != 6) continue;
+		
 		if( bufferArray[13] == 0 && bufferArray[23] == 6){ // Checking if its tcp Packet	
 			i++;
 			printf("\n\nSocket reading for Packet %d ----- Packet size =  %d\n" ,i ,dataSize );
@@ -184,21 +187,23 @@ void packetCapture(){
 		    */
 		   // printf("\nProtocol Type == %d\n\n" , bufferArray[23]);
 		    
+			addPacketHeaderInFile(dataSize , packetCapture);
+
+			fwrite(&bufferArray , dataSize , 1 , packetCapture);	
+
 		    printReleventInformation(bufferArray);
 		   //	printf("\n\nProtocol Type : ");
 		   	//checkIPVersion(bufferArray);
 			//fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,packetCapture);
 		
-			addPacketHeaderInFile(dataSize , packetCapture);
-
-			fwrite(&bufferArray,sizeof(unsigned char )*dataSize,1,packetCapture);	
 
 		}
 	}
 	
 	
 	printf("\n\n");
-	printf("Successfully received data from %d packets.\n\n" , counter);
+	printf("Successfully received PCAP file from %d packets.\n\n" , counter);
+	fclose(packetCapture);
 	
 }
 

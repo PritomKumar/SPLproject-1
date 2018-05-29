@@ -46,7 +46,7 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
     output = fopen( file ,"w");
 	cout << "All information on PCAP file . First in hexadecimal , next in character and lastly in integer." << endl<<endl;
 	fprintf(output , "All Information in PCAP file is as follows ------ \n\n");
-	fprintf(output , "\t\t\t\tHexadecimal  \t\t\t\t  Character    \t\t Integer \n\n");
+	fprintf(output , "\t\t\t\t\tHexadecimal  \t\t\t\t\t\t  Character    \t\t\t Integer \n\n");
 
 	while(!feof(fp)){
 
@@ -573,9 +573,9 @@ void analysePCAPfile(){
 	while(1){
 
 		cout << "What you want to do with the PCAP file? \n----The Options are-----\n" << endl; 
-		cout << "Option 1 : Separate the individual files From packet ." << endl;
-		cout << "Option 2 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
-		cout << "Option 3 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
+		cout << "Option 1 : Separate the different connections from the Pcap file and write  it in text file." << endl;
+		cout << "Option 2 : Read and write the full Pcap File in Hexadecimal , Character and Integers and Print it on the Screen and in text file ." <<endl;
+		cout << "Option 3 : Write the data payloads from all the packets in file. "<<endl;
 		cout << "\t   Additionally read and count the packet numbers . " <<endl;
 	
 		int choice2 = 0;
@@ -794,7 +794,7 @@ int main(){
 		int choice =0;
 
 		cout << "\nWhat do you want to do ?" <<endl;
-		cout << "Choice 1 : Capture Raw data Packets using Socket .(Only capture TCP Pcakets)" <<endl;
+		cout << "Choice 1 : Capture Raw data Packets using Socket .(Only capture TCP Packets)" <<endl;
 		cout << "Choice 2 : Analyse a existing PCAP File . "<<endl;
 	
 		cout << "Enter your choice :  " ;
