@@ -44,7 +44,7 @@ Here is the user manual.
 
 # Code properties:
     
-    1. It contains 11 source files.
+    1. It contains 5 source files.
 
        1. Header File:
             Header.h: It contains all the packet headers, protocol headers.
