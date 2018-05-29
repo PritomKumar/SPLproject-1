@@ -14,10 +14,14 @@
 8.http://www.kroosec.com/2012/10/a-look-at-pcap-file-format.html
 9.https://delog.wordpress.com/2010/12/16/information-in-a-pcap-file-with-a-single-tcpip-packet/
 10.http://www.lynxbee.com/understanding-pcap-file-format-part-i-global-header/
-FileRead
+
+FileRead*****
+
 1.https://stackoverflow.com/questions/33568577/fread-a-struct-in-c 	
 2.https://www.geeksforgeeks.org/readwrite-structure-file-c/
-TCP
+
+TCP*****
+
 1.http://home.mira.net/~marcop/tcpip_detail.htm
 2.http://www.tcpipguide.com/free/t_TCPFunctionsWhatTCPDoes.htm
 3.https://technet.microsoft.com/en-us/library/cc958821.aspx
@@ -25,7 +29,7 @@ TCP
 5.https://www.lifewire.com/tcp-transmission-control-protocol-3426736
 6.http://www.informit.com/articles/article.aspx?p=28782&seqNum=3
 
-Sequence Number
+Sequence Number*****
 
 1.http://www.lovemytool.com/blog/2010/08/practical-tcp-series-sequence-and-acknowledgement-numbers-by-chris-greer.html
 2.http://www.freesoft.org/CIE/Course/Section4/8.htm
@@ -55,3 +59,10 @@ Socket****
 3.https://www.geeksforgeeks.org/socket-programming-cc/
 4.https://www.youtube.com/watch?v=LtXEMwSG5-8
 5.https://www.youtube.com/watch?v=eVYsIolL2gE
+
+Miscellaneous****
+
+1.https://www.objc.io/issues/10-syncing-data/ip-tcp-http/
+2.https://confluence.atlassian.com/kb/how-to-capture-http-traffic-using-wireshark-or-fiddler-779164332.html
+3.http://nimishprabhu.com/analyze-post-and-get-packets-using-wireshark.html
+4.
