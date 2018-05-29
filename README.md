@@ -13,7 +13,7 @@ Here is the user manual.
     4. Then several options will come
         ->Options:
             (1). Capture Raw data Packets using Socket .(Only capture TCP Packets)
-	    (2). Analyze a existing PCAP File 
+		    (2). Analyze a existing PCAP File 
 		
                 ->> Selecting option '1' will ask you for a file name to make a valid .pcap file where the captured packets will be stored. And it also
                     ask for the number of packets you want to capture . Then capturing will start. When capturing basic packet information such as Source IP Address , Destination IP Address , Source Port Number , Destination Port Number will be shown.
