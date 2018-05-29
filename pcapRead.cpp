@@ -2,102 +2,9 @@
 #include<string.h>
 #include<stdio.h>
 #include "packetCapture.cpp"
+#include "headerFile.h"
 
 using namespace std;
-
-struct pcapGlobalHeader { 	//total 24 bytes
-
-        unsigned char magicNumber[4];   		 // magic number , 4 byte
-        unsigned char majorVersionNumber[2];   	 // major version number ,2 byte
-        unsigned char minorVersionNumber[2];  	 // minor version number , 2 byte
-        unsigned char timeOffsetGMT[4];       	 // GMT to local correction , 4 byte
-        unsigned char sigfigs[4];        	 	 // accuracy of timestamps , 4 byte
-        unsigned char maxSnapshotLenght[4];      // max length of captured packets, in octets , 4 byte
-        unsigned char linkLayerProtocol[4];      // data link type , 4 byte
-};
-
-struct packetHeader{	//total 16 bytes
-		unsigned char timeStamps[4] ;				// timestamps in seconds from 1970
-		unsigned char packetCaptureTime[4];			// capture time in microseconds
-		unsigned char packetSizeFromData[4];		// saved data size in packets
-		unsigned char packetLengthFromWire[4];		// packet length captured from wire
-
-};
-
-struct ethernetHeader{  // total 14 bytes
-                                        //[Link Layer]**//
-    unsigned char ethDestination[6];    //destination ethernet address
-    unsigned char ethSource[6];         //source ethernet address
-    unsigned char ethType[2];           //ethernet type
-
-};
-
-struct IPHeader{	//total 20 bytes
-
-                                        //[Network Layer]**//
-    unsigned char headerL;              //Header lenght
-    unsigned char Explicit;             //type of service
-    unsigned char ipLength[2];          //total length
-    unsigned char identification[2];    //Identofication
-    unsigned char fragmentOffset[2];    //fragment
-    unsigned char TTL;                  //Time to live
-    unsigned char protocol;             //transport layer protocol
-    unsigned char headerChecksum[2];    //header checksum
-    unsigned char sourceIpAddr[4];      //source ip address
-    unsigned char destIpAddr[4];        //destination ip address
-
-};
-
-struct TCPHeader{ // total 20 bytes
-
-    unsigned char sourcePort[2];
-    unsigned char destPort[2];
-    unsigned char sequenceNumber[4];
-    unsigned char acknowledgementNumber[4];
-    unsigned char tcpSegmentLenght;
-    unsigned char flags;
-    unsigned char windowSizeValue[2];
-    unsigned char checksum[2];
-    unsigned char urgentPoiter[2];
-
-};
-
-struct UDPHeader{ // total 8 bytes
-
-    unsigned char sourcePort[2];
-    unsigned char destPort[2];
-    unsigned char checksumCovrage[2];
-    unsigned char checksum[2];
-
-};
-
-struct ARPHeader{ // total 28 bytes
-
-    unsigned char hardwareType[2];
-    unsigned char protocol[2];
-    unsigned char hardwareSize;
-    unsigned char protocolSize;
-    unsigned char opcodeRequest[2];
-    unsigned char senderMac[6];
-    unsigned char senderIP[4];
-    unsigned char targetMac[6];
-    unsigned char targetIP[4];
-
-};
-
-struct wholePacket{
-
-	ethernetHeader ethhdr;
-	IPHeader iphdr;
-	TCPHeader tcphdr;
-	UDPHeader udphdr;
-	ARPHeader arphdr;
-	int dataPayloadSize;
-	unsigned char data[20000];
-
-};
-
-wholePacket packet[5000];
 
 struct impCollection{
 
@@ -118,21 +25,42 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	unsigned char ch;
 	unsigned char str[16];
 	int i=0;
+	
+	printf("Enter a file name to save All information on this PCAP file .\nFirst in hexadecimal , next in character and lastly in integer.\n");
+	string s;
+	string txtExtension= ".txt";
+	cin >> s;
+	s += txtExtension;
+	cout << "The file name you have given is : " << s << endl ;
+		
+	char file[200];
+	for(int j =0 ;  ; j++ ){
 
-    output = fopen("outputFile.txt","w");
-	cout << "All information on PCAP file . First in hexadecimal , next in character and lastly in integer" << endl<<endl;
+		file[j] = s[j];
+		if(s[j] == '\0'){
+			 file[j] = '\0';
+			 break;
+		}
+	}
+
+    output = fopen( file ,"w");
+	cout << "All information on PCAP file . First in hexadecimal , next in character and lastly in integer." << endl<<endl;
 	fprintf(output , "All Information in PCAP file is as follows ------ \n\n");
-	fprintf(output , "   Character    \t\t Integer \n\n");
+	fprintf(output , "\t\t\t\tHexadecimal  \t\t\t\t  Character    \t\t Integer \n\n");
 
 	while(!feof(fp)){
 
 		fread(&ch,1,1,fp);
 		str[i] = ch;
 		i++;
-		printf("%.02x " , ch&(0xff));
+		printf("%.02X " , ch&(0xff));
+		fprintf(output , "%.02X " , ch&(0xff));
 
 		int read ;
-		if(i%8==0) cout << "   " ;
+		if(i%8==0) {
+			cout << "   " ;
+			fprintf(output , "   ");	
+		}
 		if(i%16==0){
             for(int j=0;j<16;j++){
                 if(isprint(str[j])) {
@@ -146,6 +74,7 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 
             }
 			cout << "   " ;
+			fprintf(output , "   ");
 			fputs("   " , output);
             for(int j=0;j<16;j++){
 				read = str[j] ;
@@ -157,7 +86,10 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
             i=0;
         }
 	}
-
+	
+	
+	cout << endl << endl;
+	printf("Successfully created Text file that contains all data in Hexadecimal , Character and Integer. \n\n");
 	fclose(output);
 }
 
@@ -556,7 +488,7 @@ void printAllPacketInformations(){
 
 void writeAllDataPayloadInFile(FILE *fp , int counter){
 
-	printf("Enter a file name to save data packets.\n");
+	printf("Enter a file name to save Data payload from all packets.\n");
 	string s;
 	string txtExtension= ".txt";
 	cin >> s;
@@ -623,7 +555,6 @@ void analysePCAPfile(){
 
 	unsigned char ch;
 	unsigned char str[16];
-	int counter=0;
 	string s;
 	string pcapExtension= ".pcap";
 	cin >> s;
@@ -641,210 +572,217 @@ void analysePCAPfile(){
 			
 	while(1){
 
-	cout << "What you want to do with the PCAP file? \n----The Options are-----" << endl; 
-	cout << "Option 1 : Separate the individual files From packet ." << endl;
-	cout << "Option 2 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
-	cout << "Option 3 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
-	cout << "\t   Additionally read and count the packet numbers . " <<endl;
+		cout << "What you want to do with the PCAP file? \n----The Options are-----\n" << endl; 
+		cout << "Option 1 : Separate the individual files From packet ." << endl;
+		cout << "Option 2 : Read the full Pcap File in Character and Integers and Print them on the Screen and in text file ." <<endl;
+		cout << "Option 3 : Read the Individual Packets in PCAP file and Print them as Hexadecimal on the Screen and character in text file . "<<endl;
+		cout << "\t   Additionally read and count the packet numbers . " <<endl;
 	
-	int choice2 = 0;
+		int choice2 = 0;
+		int counter=0;
 		
-	cout << "Choose Option :  " ;
-	cin >> choice2;
+		cout << "Choose Option :  " ;
+		cin >> choice2;
 	
-	if(choice2 == 1){
+		if(choice2 == 1){
 	
-		fp = fopen(file,"rb");
-		pcapGlobalHeader globhdr;
-		fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
+			fp = fopen(file,"rb");
+			pcapGlobalHeader globhdr;
+			fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
 
-		while(1){
+			while(1){
 
-			packetHeader  pachdr;
+				packetHeader  pachdr;
 
-			fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
-			if(feof(fp)) break;
+				fread(&pachdr , sizeof(struct packetHeader) , 1 , fp);
+				if(feof(fp)) break;
 
-			int len = dataSize(pachdr) ;
-			len = readHeadersFromPcapFile(len , fp , counter);
+				int len = dataSize(pachdr) ;
+				len = readHeadersFromPcapFile(len , fp , counter);
 
-			packet[counter].dataPayloadSize = len;
-			loadDataPayload(counter, len ,fp );
+				packet[counter].dataPayloadSize = len;
+				loadDataPayload(counter, len ,fp );
 				
-			counter++;
-		}
+				counter++;
+			}
 
-		totalPackets = counter;
-		cout << "\n\nTotal packets = " << totalPackets <<endl;
+			totalPackets = counter;
+			cout << "\n\nTotal packets = " << totalPackets <<endl;
 
-		fclose(fp);
+			fclose(fp);
 
-		for(int i=0 ; i < totalPackets ; i++){
+			for(int i=0 ; i < totalPackets ; i++){
 
-			int len = dataSizeForIPHeader( packet[i].iphdr.ipLength );
-		   	//cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
-			//cout <<"\n\nPacket no : " << i+1 << " and Packet payload : " <<  packet[i].dataPayloadSize <<endl <<endl;
-
-		}
-
-		//printfDataArray(counter);
-
-		FILE *dataSegment;
-		//dataSegment = fopen("dataFile.txt" , "w");
-	/*
-		for(int i=0 ; i< totalPackets ; i++){
-			cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
-
-			for(int j =0 ; j< 4 ; j++){
-
-				cout << (int)packet[i].iphdr.sourceIpAddr[j]  << "." ;
+				int len = dataSizeForIPHeader( packet[i].iphdr.ipLength );
+			   	//cout <<"\n\nPacket no : " << i+1 << " and Packet size : " <<  len <<endl <<endl;
+				//cout <<"\n\nPacket no : " << i+1 << " and Packet payload : " <<  packet[i].dataPayloadSize <<endl <<endl;
 
 			}
 
-			cout << endl <<endl;
+			//printfDataArray(counter);
 
-		}
-
-	*/
-
-		separatingIndividualPacketsToAppropriateFiles();
-
-		int instanceCounter = checkSeparateFilePackets();
-
-		printf( "\n\nTotal Separate Files in this PCAP file is %d . \n\n" , instanceCounter);
-
-		//printf("\nEnter File name you want to create . \n");
-
-		string fileName[instanceCounter];
-
-		for(int i=0 ; i< instanceCounter ; i++){
-			printf("\nEnter File name for FILE NO : %d \n" , i+1);
-			string s;
-			string txtExtension= ".txt";
-			cin >> s;
-			s += txtExtension;
-
-			fileName[i] = s;
-		}
-			
-		cout << "The data file names you have given are : " << endl << endl;
-		for(int i=0 ; i< instanceCounter ; i++){
-
-			 cout << fileName[i]  << "   " ;
-		}
-		cout << endl;
-
-		//printAllPacketInformations();
-
-		char nameFile[200];
-		for(int j =0 ;  ; j++ ){
-
-			nameFile[j] = fileName[0][j];
-			if(fileName[0][j] == '\0') {
-				nameFile[j] = '\0';
-				break;
-			}
-		}
-		//cout <<endl<<endl;
+			FILE *dataSegment;
+			//dataSegment = fopen("dataFile.txt" , "w");
 		/*
-		for(int j =0 ; j<fileName[0].length() ; j++ ){
-			printf("%c" , nameFile[j]);
-		}
+			for(int i=0 ; i< totalPackets ; i++){
+				cout <<"\n\nPacket no : " << i+1 << " and Source IP : " ;
 
-		cout <<endl<<endl;
+				for(int j =0 ; j< 4 ; j++){
+
+					cout << (int)packet[i].iphdr.sourceIpAddr[j]  << "." ;
+
+				}
+
+				cout << endl <<endl;
+
+			}
+
 		*/
-		dataSegment = fopen( nameFile , "w+");
 
-		fprintf(dataSegment , "-----------Collected Full Data File : %d -----\n\n" , 1);
-		//cout << "paisi 0 \n\n" ; 
+			separatingIndividualPacketsToAppropriateFiles();
 
-		int ct=1;
-		for(int i=0 ; i< totalPackets ; i++){
-			//unsigned long int sqNumber = sequenceNumber(packet[i].tcphdr.sequenceNumber);
-			if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
-				if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
-					if(packet[i].dataPayloadSize != 0){   // checks if data payload is empty or not
-						//if(sqNumber + packet[i].dataPayloadSize == sequenceNumber(packet[i+1].tcphdr.sequenceNumber)){ // check if the next sequence is valid
-							//fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
-							//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
-							//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
-							//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
+			int instanceCounter = checkSeparateFilePackets();
 
-							for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
+			printf( "\n\nTotal Separate Files in this PCAP file is %d . \n\n" , instanceCounter);
 
-								ch = packet[i].data[j];
-								//printf("%.02x " , ch&(0xff));
-								if(isprint(ch)) {
-									fputc( ch ,dataSegment);
+			//printf("\nEnter File name you want to create . \n");
+
+			string fileName[instanceCounter];
+
+			for(int i=0 ; i< instanceCounter ; i++){
+				printf("\nEnter File name for FILE NO : %d \n" , i+1);
+				string s;
+				string txtExtension= ".txt";
+				cin >> s;
+				s += txtExtension;
+
+				fileName[i] = s;
+			}
+			
+			cout << "The data file names you have given are : " << endl << endl;
+			for(int i=0 ; i< instanceCounter ; i++){
+
+				 cout << fileName[i]  << "   " ;
+			}
+			cout << endl;
+
+			//printAllPacketInformations();
+
+			char nameFile[200];
+			for(int j =0 ;  ; j++ ){
+
+				nameFile[j] = fileName[0][j];
+				if(fileName[0][j] == '\0') {
+					nameFile[j] = '\0';
+					break;
+				}
+			}
+			//cout <<endl<<endl;
+			/*
+			for(int j =0 ; j<fileName[0].length() ; j++ ){
+				printf("%c" , nameFile[j]);
+			}
+
+			cout <<endl<<endl;
+			*/
+			dataSegment = fopen( nameFile , "w+");
+
+			fprintf(dataSegment , "-----------Collected Full Data File : %d -----\n\n" , 1);
+			//cout << "paisi 0 \n\n" ; 
+
+			int ct=1;
+			for(int i=0 ; i< totalPackets ; i++){
+				//unsigned long int sqNumber = sequenceNumber(packet[i].tcphdr.sequenceNumber);
+				if((int)packet[i].ethhdr.ethType[1] == 0){  //checking if its IP Header
+					if( (int)packet[i].iphdr.protocol == 6 ) {   //checking if its TCP Header
+						if(packet[i].dataPayloadSize != 0){   // checks if data payload is empty or not
+							//if(sqNumber + packet[i].dataPayloadSize == sequenceNumber(packet[i+1].tcphdr.sequenceNumber)){ // check if the next sequence is valid
+								//fprintf(dataSegment, "\n\n----------DATA Payload for Packet No : %d  PayloadSize = %d  -----------\n\n", i+1 , packet[i].dataPayloadSize );
+								//cout <<"\n\nPacket no : " << i+1 << " and Data Payload size : " <<  dataPayloadSize[i] <<endl <<endl;
+								//cout <<"\n\nPacket no : " << i+1 << " and Source port : " <<  dataSizeForTCPHeader(tcphdr[i]) <<endl <<endl;
+								//cout <<"\n\nPacket no : " << i+1 << " and Time to leave : " <<  (int)iphdr[i].TTL <<endl <<endl;
+
+								for(int j =0 ; j< packet[i].dataPayloadSize ; j++){
+
+									ch = packet[i].data[j];
+									//printf("%.02x " , ch&(0xff));
+									if(isprint(ch)) {
+										fputc( ch ,dataSegment);
+									}
+									else {
+										if(ch == '\n' ) fputs("\n", dataSegment);
+										else fputs(".", dataSegment);
+									}
 								}
-								else {
-									if(ch == '\n' ) fputs("\n", dataSegment);
-									else fputs(".", dataSegment);
+
+							//}
+							if(i==totalPackets-1) break; //total
+							if(IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr) ==  notable[ct-1].sourceIPData
+								&& IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr) == notable[ct-1].destIPData
+								&& sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort) ==  notable[ct-1].sourcePortData
+								&& destPortFromTcpHeader(packet[i+1].tcphdr.destPort) ==  notable[ct-1].destPortData ){
+
+
+								fclose(dataSegment);
+								//cout << "paisi  ct = " << ct  << "\n\n";
+								char file[200];
+								for(int j =0 ;  ; j++ ){
+
+									file[j] = fileName[ct][j];
+									if(fileName[ct][j] == '\0') {
+										file[j] = '\0';
+										break;
+									}
 								}
-							}
+		/*
 
-						//}
-						if(i==totalPackets-1) break; //total
-						if(IPHeaderSourceData(packet[i+1].iphdr.sourceIpAddr) ==  notable[ct-1].sourceIPData
-							&& IPHeaderDestinationData(packet[i+1].iphdr.destIpAddr) == notable[ct-1].destIPData
-							&& sourcePortFromTcpHeader(packet[i+1].tcphdr.sourcePort) ==  notable[ct-1].sourcePortData
-							&& destPortFromTcpHeader(packet[i+1].tcphdr.destPort) ==  notable[ct-1].destPortData ){
-
-
-							fclose(dataSegment);
-							//cout << "paisi  ct = " << ct  << "\n\n";
-							char file[200];
-							for(int j =0 ;  ; j++ ){
-
-								file[j] = fileName[ct][j];
-								if(fileName[ct][j] == '\0') {
-									file[j] = '\0';
-									break;
+								for(int j =0 ; j<=fileName[ct].length() ; j++ ){
+									printf("%c" , file[j]);
 								}
-							}
-	/*
+								cout <<endl<<endl;
+		*/
+								dataSegment = fopen( file , "w+");
+								ct++;
 
-							for(int j =0 ; j<=fileName[ct].length() ; j++ ){
-								printf("%c" , file[j]);
+								fprintf(dataSegment , "-----------Collected Full Data File : %d -----\n\n" , ct);
 							}
-							cout <<endl<<endl;
-	*/
-							dataSegment = fopen( file , "w+");
-							ct++;
-
-							fprintf(dataSegment , "-----------Collected Full Data File : %d -----\n\n" , ct);
 						}
 					}
 				}
 			}
+			//cout << "paisi  ct = " << ct  << "\n\n";
+			//cout << "\n\nTotal packets = " << totalPackets <<endl;
+			fclose(dataSegment);
+			//fclose(fp);
+			printf("\nSuccessfully created separate Text files that contains the packet data for important connections. \n\n");
 		}
-		//cout << "paisi  ct = " << ct  << "\n\n";
-		//cout << "\n\nTotal packets = " << totalPackets <<endl;
-		fclose(dataSegment);
-		fclose(fp);
-	}
 			
-	else if (choice2 == 2) {
-		fp = fopen(file,"rb");
-		readAndWriteFullPcapDataAsCharacterAndInteger( fp );
-		fclose(fp);
-	}
+		else if (choice2 == 2) {
+			fp = fopen(file,"rb");
+			readAndWriteFullPcapDataAsCharacterAndInteger( fp );
+			fclose(fp);
+		}
 			
-	else if (choice2 == 3) {
+		else if (choice2 == 3) {
 	
-		fp = fopen(file,"rb");
-		writeAllDataPayloadInFile(fp , counter);
-		fclose(fp);
+			fp = fopen(file,"rb");
+			writeAllDataPayloadInFile(fp , counter);
+			fclose(fp);
 				
-	}
-	cout << "Do you want to choose another option? (Yes/No)" <<endl;
+		}
+		cout << "Do you want to choose another option? (Yes/No)" <<endl;
 	
-	string s2;
-	cin >> s2;
+		string s2;
+		cin >> s2;
 			
-	cout << endl<<endl;
-	if(s2 == "No" || s2 == "NO" || s2 == "no")	break;
-	if(s2 == "Yes" || s2 == "yes" || s2 == "YES") 	continue;
+		cout << endl<<endl;
+		if(s2 == "No" || s2 == "NO" || s2 == "no")	break;
+		else if(s2 == "Yes" || s2 == "yes" || s2 == "YES") 	continue;
+		else {
+	
+			printf("You have given an invalid option.....Terminating process\n\n");
+			exit(0);
+		}
 		
 	}
 }
@@ -875,7 +813,11 @@ int main(){
 		
 		cout << endl << endl;
 		if(s1 == "No" || s1 == "NO" || s1 == "no")	break;
-		if(s1 == "Yes" || s1 == "yes" || s1 == "YES") 	continue;
+		else if(s1 == "Yes" || s1 == "yes" || s1 == "YES") 	continue;
+		else {
+			printf("You have given an invalid option.....Terminating process\n\n");
+			exit(0);
+		}
 	
 	}
 

@@ -196,8 +196,10 @@ void packetCapture(){
 		}
 	}
 	
+	
 	printf("\n\n");
-
+	printf("Successfully received data from %d packets.\n\n" , counter);
+	
 }
 
 
