@@ -25,14 +25,14 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 	unsigned char ch;
 	unsigned char str[16];
 	int i=0;
-	
+
 	printf("Enter a file name to save All information on this PCAP file .\nFirst in hexadecimal , next in character and lastly in integer.\n");
 	string s;
 	string txtExtension= ".txt";
 	cin >> s;
 	s += txtExtension;
 	cout << "The file name you have given is : " << s << endl ;
-		
+
 	char file[200];
 	for(int j =0 ;  ; j++ ){
 
@@ -59,7 +59,7 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
 		int read ;
 		if(i%8==0) {
 			cout << "   " ;
-			fprintf(output , "   ");	
+			fprintf(output , "   ");
 		}
 		if(i%16==0){
             for(int j=0;j<16;j++){
@@ -86,8 +86,8 @@ void readAndWriteFullPcapDataAsCharacterAndInteger(FILE *fp ){
             i=0;
         }
 	}
-	
-	
+
+
 	cout << endl << endl;
 	printf("Successfully created Text file that contains all data in Hexadecimal , Character and Integer. \n\n");
 	fclose(output);
@@ -474,8 +474,8 @@ void separatingIndividualPacketsToAppropriateFiles(){
 void printAllPacketInformations(){
 
     for(int k = 0 ; k< totalPackets ; k++){
-        cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  << 
-        "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "." << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<  
+        cout <<"\nPacket no : " << k+1 << " and Source IP Address : " <<  (int)packet[k].iphdr.sourceIpAddr[0]  <<
+        "."  << (int)packet[k].iphdr.sourceIpAddr[1] << "." << (int)packet[k].iphdr.sourceIpAddr[2] << "." <<
         (int)packet[k].iphdr.sourceIpAddr[3]<< " and Destination IP Address : " << (int)packet[k].iphdr.destIpAddr[0] << "."
 		<< (int)packet[k].iphdr.destIpAddr[1] << "." << (int)packet[k].iphdr.destIpAddr[2] << "." << (int)packet[k].iphdr.destIpAddr[3] <<endl;
         //cout <<"\n\nPacket no : " << k+1 << " and Destination port : " <<  IPHeaderDestinationData(iphdr[k]) <<endl <<endl;
@@ -494,7 +494,7 @@ void writeAllDataPayloadInFile(FILE *fp , int counter){
 	cin >> s;
 	s += txtExtension;
 	cout << "The file name you have given is : " << s << endl ;
-		
+
 	char file[200];
 	for(int j =0 ;  ; j++ ){
 
@@ -510,10 +510,10 @@ void writeAllDataPayloadInFile(FILE *fp , int counter){
 
 	pcapGlobalHeader globhdr;
 	fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
-			
+
 	//cout <<"----------DATA Payload For Individual Packets----------- " << endl <<endl;
 	fprintf(segment , "----------DATA Payload For Individual Packets-----------\n\n ");
-			
+
 	while(1){
 		packetHeader  pachdr;
 
@@ -525,7 +525,7 @@ void writeAllDataPayloadInFile(FILE *fp , int counter){
 
 		len = readHeadersFromPcapFile(len , fp , counter);
 		packet[counter].dataPayloadSize = len;
-				
+
 		//cout <<"\n\nPacket no : " << counter << " and Data Payload size : " <<  dataPayloadSize[counter] <<endl <<endl;
 
 		//printAllDataPayload(counter ,len , fp , segment);
@@ -536,11 +536,11 @@ void writeAllDataPayloadInFile(FILE *fp , int counter){
 		//if (counter>1) break;  //control how many packets will be shown or read.
 
 	}
-			
+
 	totalPackets = counter;
 
 	cout << "Total packets = " << totalPackets <<endl;
-	
+
 	printf("\nData payload for all packets have been written in file successfully.\n\n");
 
 	fclose(segment);
@@ -550,7 +550,7 @@ void writeAllDataPayloadInFile(FILE *fp , int counter){
 void analysePCAPfile(){
 
 	cout << "\nEnter a existing pcap filename to examine .(Have to be a pcap file). "  << endl;
-		
+
 	FILE *fp;
 
 	unsigned char ch;
@@ -560,7 +560,7 @@ void analysePCAPfile(){
 	cin >> s;
 	s += pcapExtension;
 	cout << "The file name you have given is : " << s << endl << endl;
-		
+
 	char file[200];
 	for(int j =0 ;  ; j++ ){
 		file[j] = s[j];
@@ -568,24 +568,24 @@ void analysePCAPfile(){
 			 file[j] = '\0';
 			 break;
 		}
-	}	
-			
+	}
+
 	while(1){
 
-		cout << "What you want to do with the PCAP file? \n----The Options are-----\n" << endl; 
+		cout << "What you want to do with the PCAP file? \n----The Options are-----\n" << endl;
 		cout << "Option 1 : Separate the different connections from the Pcap file and write  it in text file." << endl;
 		cout << "Option 2 : Read and write the full Pcap File in Hexadecimal , Character and Integers and Print it on the Screen and in text file ." <<endl;
 		cout << "Option 3 : Write the data payloads from all the packets in file. "<<endl;
 		cout << "\t   Additionally read and count the packet numbers . " <<endl;
-	
+
 		int choice2 = 0;
 		int counter=0;
-		
+
 		cout << "Choose Option :  " ;
 		cin >> choice2;
-	
+
 		if(choice2 == 1){
-	
+
 			fp = fopen(file,"rb");
 			pcapGlobalHeader globhdr;
 			fread(&globhdr, sizeof(struct pcapGlobalHeader), 1, fp);
@@ -602,7 +602,7 @@ void analysePCAPfile(){
 
 				packet[counter].dataPayloadSize = len;
 				loadDataPayload(counter, len ,fp );
-				
+
 				counter++;
 			}
 
@@ -658,7 +658,7 @@ void analysePCAPfile(){
 
 				fileName[i] = s;
 			}
-			
+
 			cout << "The data file names you have given are : " << endl << endl;
 			for(int i=0 ; i< instanceCounter ; i++){
 
@@ -688,7 +688,7 @@ void analysePCAPfile(){
 			dataSegment = fopen( nameFile , "w+");
 
 			fprintf(dataSegment , "-----------Collected Full Data File : %d -----\n\n" , 1);
-			//cout << "paisi 0 \n\n" ; 
+			//cout << "paisi 0 \n\n" ;
 
 			int ct=1;
 			for(int i=0 ; i< totalPackets ; i++){
@@ -750,9 +750,10 @@ void analysePCAPfile(){
 					}
 				}
 			}
+			/*
 			cout << "Connection is established with other protocols . So " << fileName[0] << " may not be readable and or secure.\n";
 			for (int i=0 ; i < instanceCounter-1 ; i++ ){
-			
+
 				if(notable[i].sourcePortData == 80) {
 					cout << "Connection is established with HTTP protocol . So " << fileName[i+1] << " will be readable and not secure.\n";
 				}
@@ -763,40 +764,41 @@ void analysePCAPfile(){
 					cout << "Connection is established with other protocols . So " << fileName[i+1] << " may not be readable and or secure.\n";
 				}
 			}
+			*/
 			//cout << "paisi  ct = " << ct  << "\n\n";
 			//cout << "\n\nTotal packets = " << totalPackets <<endl;
 			fclose(dataSegment);
 			//fclose(fp);
 			printf("\nSuccessfully created separate Text files that contains the packet data for important connections. \n\n");
 		}
-			
+
 		else if (choice2 == 2) {
 			fp = fopen(file,"rb");
 			readAndWriteFullPcapDataAsCharacterAndInteger( fp );
 			fclose(fp);
 		}
-			
+
 		else if (choice2 == 3) {
-	
+
 			fp = fopen(file,"rb");
 			writeAllDataPayloadInFile(fp , counter);
 			fclose(fp);
-				
+
 		}
 		cout << "Do you want to choose another option? (Yes/No)" <<endl;
-	
+
 		string s2;
 		cin >> s2;
-			
+
 		cout << endl<<endl;
 		if(s2 == "No" || s2 == "NO" || s2 == "no")	break;
 		else if(s2 == "Yes" || s2 == "yes" || s2 == "YES") 	continue;
 		else {
-	
+
 			printf("You have given an invalid option.....Terminating process\n\n");
 			exit(0);
 		}
-		
+
 	}
 }
 
