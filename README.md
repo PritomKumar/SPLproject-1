@@ -1,4 +1,4 @@
-# SPLproject-1
+# Text Bandit
 
 //Reading a pcap file
 
