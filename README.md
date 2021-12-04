@@ -14,7 +14,6 @@
 - [About The Project](#about-the-project)
 - [Features and Architecture](#Features-and-Architecture)
 - [Project Demo](#project-demo)
-- [Usage](#usage)
 - [Main Project Files](#main-project-files)
 - [License](#license)
 - [Author Info](#author-info)
@@ -93,59 +92,8 @@ Working procedures:
 
 [![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
 
-### Company Application Screenshots
-
 ---
 
-<table style="width:100%">
-  <tr>
-    <th>Home Page to add tasks</th>
-    <th>Add task page</th>
-  </tr>
-  <tr>
-   <tr>
-    <td><img src="Documentation/Demo/earneasy29.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy30.jpg"/></td>
-  </tr>
-   <tr>
-    <th>Select and add different subtasks.</th>
-    <th>Edit tasks list.</th>
-  </tr>
-  <tr>
-   <tr>
-    <td><img src="Documentation/Demo/earneasy31.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy33.jpg"/></td>
-  </tr>
-   <tr>
-    <th>Select and add different subtasks.</th>
-    <th>Add options.</th>
-  </tr>
-  <tr>
-   <tr>
-    <td><img src="Documentation/Demo/earneasy31.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy32.jpg"/></td>
-  </tr>
-  <tr>
-    <th>Edit task list.</th>
-    <th>Review task</th>
-  </tr>
-  <tr>
-   <tr>
-    <td><img src="Documentation/Demo/earneasy33.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy34.jpg"/></td>
-  </tr>
-</table>
-
-
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
-
----
-
-## Usage
-
-*For detailed user manual, please refer to the end of this [Documentation](https://github.com/PritomKumar/Software-Project-Lab-3/blob/master/Documentation/Report/SRS%20Final.pdf)*
-
----
 ## Main Project Files
 *For detailed project code overview go inside the "App" folder or click [here](https://github.com/PritomKumar/Software-Project-Lab-3/tree/master/App).*
 
