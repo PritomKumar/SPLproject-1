@@ -42,8 +42,8 @@ Working procedures:
 - Terminal Program
 - Capture data packets
 - Store data packets
-
-
+- Analyze the packets
+- Check if there are any open HTTP connection in the network.
 ---
 
 ### Application Architecture
@@ -65,62 +65,30 @@ Working procedures:
 
 <table style="width:100%">
   <tr>
-    <th>Start your journey!</th>
-    <th>Google sign in.</th>
+    <th>Output Page 1</th>
   </tr>
   <tr>
-    <td><img src="Documentation/Demo/earneasy1.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy2.jpg"/></td>
-  </tr>
-  <!-- <tr>
-    <th>Sign in by email.</th>
-    <th>Don't have an account? Register.</th>
+    <td><img src="Demo/1.png"/></td>
   </tr>
   <tr>
-    <td><img src="Documentation/Demo/earneasy3.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy4.jpg"/></td>
-  </tr>
-   -->
-  <tr>
-    <th>Home Page</th>
-    <th>Navigation bar to check available tasks.</th>
+    <th>Output Page 2</th>
   </tr>
   <tr>
-     <td><img src="Documentation/Demo/earneasy6.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy7.jpg"/></td>
+    <td><img src="Demo/2.png"/></td>
   </tr>
   <tr>
-    <th>Side Drawer.</th>
-    <th>Update your profile to get more tasks</th>
+    <th>Output Page 3</th>
   </tr>
   <tr>
-    <td><img src="Documentation/Demo/earneasy9.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy10.jpg"/></td>
+    <td><img src="Demo/3.png"/></td>
   </tr>
   <tr>
-    <th>Available task page.</th>
-    <th>List of tasks.</th>
+    <th>Output Page 4</th>
   </tr>
   <tr>
-     <td><img src="Documentation/Demo/earneasy15.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy17.jpg"/></td>
+    <td><img src="Demo/4.png"/></td>
   </tr>
-   <tr>
-    <th>Select image for image task.</th>
-    <th>Image manipulation.</th>
-  </tr>
-  <tr>
-     <td><img src="Documentation/Demo/earneasy24.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy26.jpg"/></td>
-  </tr>
-   <tr>
-    <th>Notification Page</th>
-    <th>Task Complete.</th>
-  </tr>
-  <tr>
-     <td><img src="Documentation/Demo/earneasy14.jpg"/></td>
-    <td><img src="Documentation/Demo/earneasy27.jpg"/></td>
-  </tr>
+  
 </table>
 
 [![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
