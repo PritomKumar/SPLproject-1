@@ -58,7 +58,7 @@ Working procedures:
 
 ## Project Demo
 
-### Member Application Screenshots
+### Application Output
 
 ---
 
