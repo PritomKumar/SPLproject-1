@@ -95,7 +95,7 @@ Working procedures:
 ---
 
 ## Main Project Files
-*For detailed project code overview go inside the "App" folder or click [here](https://github.com/PritomKumar/Software-Project-Lab-3/tree/master/App).*
+*For detailed project code overview go inside the "Code" folder or click [here](https://github.com/PritomKumar/SPLproject-1/tree/master/Code).*
 
 
 [![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
