@@ -1,10 +1,9 @@
 # Text Bandit
 
-[![Platform](https://img.shields.io/badge/platform-Android-yellow.svg)](https://www.android.com)
+[![Platform](https://img.shields.io/badge/platform-Linux-yellow.svg)](https://www.linux.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Gradle Version](https://img.shields.io/badge/gradle-4.0-green.svg)](https://docs.gradle.org/current/release-notes)
-![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=flat-square&logo=dart&logoColor=white)
-![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=flat-square&logo=Flutter&logoColor=white)
+![C](https://img.shields.io/badge/c-%2300599C.svg?style=flat-square&logo=c&logoColor=white)
+![C#](https://img.shields.io/badge/c%23-%23239120.svg?style=flat-square&logo=c-sharp&logoColor=white)
 [![Awesome Badge](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://java-lang.github.io/awesome-java)
 
 ---
@@ -28,6 +27,7 @@ This program is used to steal data from open HTTP connection in any network. We 
 Working procedures:
 1. First the pcapCapture.cpp is called to capture the data in an open HTTP connection. It captures all the packets sending and receving in the connection. Then it writes all the packets in a user-specified file.
 2. After caputuring the files the pcapAnalyze.cpp is called. It analyzes the packets gathers all the packets from the same connection in order. Then we can save the result in a user-specfied file and see the results. Thus the steal is complete!
+3. After that the data packets are sorted according to their source IP adress, destination IP adress, source port number, destination port number. Then the packets are placed according to the sequence number.
 
 
 [![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
@@ -40,6 +40,7 @@ Working procedures:
 
 - Terminal Program
 - Capture data packets
+- Store data packets
 
 
 ---
