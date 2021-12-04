@@ -30,7 +30,7 @@ Working procedures:
 3. After that the data packets are sorted according to their source IP adress, destination IP adress, source port number, destination port number. Then the packets are placed according to the sequence number.
 
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
 
 ---
 
@@ -52,7 +52,7 @@ Working procedures:
 - IDE: Visual Studio Code
 - Libraries: sys/socket.h
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
 
 ---
 
@@ -90,7 +90,7 @@ Working procedures:
   
 </table>
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
 
 ---
 
@@ -98,7 +98,7 @@ Working procedures:
 *For detailed project code overview go inside the "App" folder or click [here](https://github.com/PritomKumar/Software-Project-Lab-3/tree/master/App).*
 
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
 
 ---
 
@@ -129,7 +129,7 @@ SOFTWARE.
 
 ```
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
 
 ---
 
@@ -138,4 +138,4 @@ SOFTWARE.
 - Linkedin - [Linked In](https://www.linkedin.com/in/pritomkumar/fr)
 - Website - [Pritom Kumar Das](https://sites.google.com/view/pritom-kumar-das/)
 
-[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#EarnEasy)
+[![](https://img.shields.io/badge/back%20to%20top-%E2%86%A9-blue)](#Text-Bandit)
